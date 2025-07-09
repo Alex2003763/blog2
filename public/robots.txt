@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# 允許搜尋引擎索引網站
+Allow: /posts/*
+Allow: /
+
+# 禁止索引管理後台
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap 位置
+Sitemap: https://your-domain.com/sitemap.xml

@@ -1,0 +1,492 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS 變數 */
+:root {
+  --primary-color: #3B82F6;
+  --accent-color: #8B5CF6;
+  --font-family: Inter, sans-serif;
+  --base-font-size: 1rem;
+}
+
+/* Custom styles */
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-family), -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-size: var(--base-font-size);
+  height: 100%;
+}
+
+#__next {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Markdown editor styles */
+.w-md-editor {
+  background-color: #fff;
+}
+
+.w-md-editor.w-md-editor-dark {
+  background-color: #1f2937;
+}
+
+.w-md-editor-text-container,
+.w-md-editor-text {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+}
+
+.w-md-editor-preview {
+  padding: 16px;
+}
+.w-md-editor-dark .w-md-editor-preview {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+.w-md-editor-dark .w-md-editor-text-container,
+.w-md-editor-dark .w-md-editor-text {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.w-md-editor-dark .w-md-editor-text-input {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+.w-md-editor-dark .w-md-editor-text-textarea {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+/* Article content styles */
+.markdown-content {
+  line-height: 1.8;
+  color: #333;
+}
+
+.dark .markdown-content {
+  color: #f9fafb;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dark .markdown-content h1,
+.dark .markdown-content h2,
+.dark .markdown-content h3,
+.dark .markdown-content h4,
+.dark .markdown-content h5,
+.dark .markdown-content h6 {
+  color: #f9fafb;
+}
+
+.markdown-content h1 {
+  font-size: 1em;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5em;
+}
+
+.dark .markdown-content h1 {
+  border-bottom: 2px solid #4b5563;
+}
+
+.markdown-content h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.3em;
+}
+
+.dark .markdown-content h2 {
+  border-bottom: 1px solid #4b5563;
+}
+
+.markdown-content h3 {
+  font-size: 1.25em;
+}
+
+.markdown-content p {
+  margin-bottom: 1em;
+  text-align: justify;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5em;
+}
+
+.markdown-content blockquote {
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  background-color: #f9fafb;
+  border-left: 4px solid #d1d5db;
+  color: #6b7280;
+}
+
+.dark .markdown-content blockquote {
+  background-color: #374151;
+  border-left: 4px solid #6b7280;
+  color: #d1d5db;
+}
+
+.markdown-content code {
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  color: #e11d48;
+}
+
+.dark .markdown-content code {
+  background-color: #374151;
+  color: #fb7185;
+}
+
+.markdown-content strong {
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.dark .markdown-content strong {
+  color: #f9fafb;
+  font-weight: 700;
+}
+
+.markdown-content pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.dark .markdown-content pre {
+  background-color: #111827;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 1em 0;
+  border-radius: 6px;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  margin: 0 0 1em 0;
+  width: 100%;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5em;
+  text-align: left;
+}
+
+.dark .markdown-content th,
+.dark .markdown-content td {
+  border: 1px solid #4b5563;
+}
+
+.markdown-content th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+.dark .markdown-content th {
+  background-color: #374151;
+}
+
+/* Responsive design */
+@media (max-width: 475px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .markdown-content {
+    font-size: 14px;
+  }
+  
+  .markdown-content h1 {
+    font-size: 1.5em;
+  }
+  
+  .markdown-content h2 {
+    font-size: 1.25em;
+  }
+  
+  .markdown-content h3 {
+    font-size: 1.125em;
+  }
+}
+
+@media (max-width: 768px) {
+  .markdown-content {
+    font-size: 16px;
+  }
+  
+  .markdown-content h1 {
+    font-size: 1.75em;
+  }
+  
+  .markdown-content h2 {
+    font-size: 1.5em;
+  }
+  
+  .markdown-content h3 {
+    font-size: 1.25em;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+
+/* Container query support */
+@container (max-width: 400px) {
+  .card-content {
+    padding: 0.75rem;
+  }
+}
+
+/* Improve touch device experience */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:shadow-md:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Loading animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 文字截斷 */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 自定義滾動條 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* 目錄導航樣式 */
+.table-of-contents {
+  position: sticky;
+  top: 120px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.table-of-contents ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.table-of-contents li {
+  margin: 0;
+  padding: 0;
+}
+
+.table-of-contents a {
+  display: block;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  transition: color 0.2s;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+}
+
+.dark .table-of-contents a {
+  color: #9ca3af;
+}
+
+.table-of-contents a:hover {
+  color: #2563eb;
+}
+
+.dark .table-of-contents a:hover {
+  color: #60a5fa;
+}
+
+.table-of-contents a.active {
+  color: #2563eb;
+  border-left-color: #2563eb;
+  font-weight: 500;
+}
+
+.dark .table-of-contents a.active {
+  color: #60a5fa;
+  border-left-color: #60a5fa;
+}
+
+.table-of-contents .level-2 {
+  padding-left: 1.5rem;
+}
+
+.table-of-contents .level-3 {
+  padding-left: 2.25rem;
+}
+
+.table-of-contents .level-4 {
+  padding-left: 3rem;
+}
+
+/* 推薦文章樣式 */
+.recommended-posts {
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dark .recommended-posts {
+  border-top: 1px solid #4b5563;
+}
+
+/* 動態顏色類別 */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-accent {
+  color: var(--accent-color);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+}
+
+.border-primary {
+  border-color: var(--primary-color);
+}
+
+.border-accent {
+  border-color: var(--accent-color);
+}
+
+.hover\:bg-primary:hover {
+  background-color: var(--primary-color);
+}
+
+.hover\:bg-accent:hover {
+  background-color: var(--accent-color);
+}
+
+.hover\:text-primary:hover {
+  color: var(--primary-color);
+}
+
+.hover\:text-accent:hover {
+  color: var(--accent-color);
+}
+
+/* 動態字體大小類別 */
+.text-dynamic {
+  font-size: var(--base-font-size);
+}
+
+.text-dynamic-lg {
+  font-size: calc(var(--base-font-size) * 1.125);
+}
+
+.text-dynamic-xl {
+  font-size: calc(var(--base-font-size) * 1.25);
+}
+
+.text-dynamic-2xl {
+  font-size: calc(var(--base-font-size) * 1.5);
+}
+
+.text-dynamic-3xl {
+  font-size: calc(var(--base-font-size) * 1.875);
+}
