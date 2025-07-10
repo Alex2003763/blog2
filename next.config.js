@@ -11,7 +11,6 @@ const nextConfig = {
   },
   // 支援 Cloudflare Pages 和 Netlify 部署
   trailingSlash: true,
-  output: 'standalone',
   images: {
     unoptimized: true,
   },
