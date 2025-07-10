@@ -46,6 +46,7 @@ export class DynamoDBService {
   }
 
   async getPublishedPosts(): Promise<BlogPost[]> {
+    console.log("Fetching published posts from table:", this.tableName);
     try {
       const params = {
         TableName: this.tableName,
@@ -54,11 +55,18 @@ export class DynamoDBService {
           ':published': true,
         },
       };
-
+      console.log("Scan params:", JSON.stringify(params, null, 2));
       const result = await dynamodb.send(new ScanCommand(params));
+      console.log(`Found ${result.Items?.length || 0} published posts.`);
       return (result.Items as BlogPost[]) || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching published posts:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      if (error.$metadata) {
+        console.error('Error metadata:', error.$metadata);
+      }
       throw error;
     }
   }
@@ -84,16 +92,20 @@ export class DynamoDBService {
     try {
       const params = {
         TableName: this.tableName,
-        IndexName: 'slug-index', // GSI for querying by slug
-        KeyConditionExpression: 'slug = :slug',
+        FilterExpression: 'slug = :slug',
         ExpressionAttributeValues: {
           ':slug': slug,
         },
       };
 
-      const result = await dynamodb.send(new QueryCommand(params));
+      const result = await dynamodb.send(new ScanCommand(params));
       const items = result.Items as BlogPost[];
-      return items && items.length > 0 ? items[0] : null;
+      
+      if (items && items.length > 0) {
+        const post = items.find(p => p.published);
+        return post || null;
+      }
+      return null;
     } catch (error) {
       console.error('Error fetching post by slug:', error);
       throw error;
