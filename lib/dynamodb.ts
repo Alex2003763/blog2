@@ -1,11 +1,12 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, ScanCommand, PutCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, ScanCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { v4 as uuidv4 } from 'uuid';
 
 const client = new DynamoDBClient({
-  region: process.env.NETLIFY_AWS_REGION,
+  region: process.env.NETLIFY_AWS_REGION || process.env.AWS_REGION,
   credentials: {
-    accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || "",
+    accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || "",
   },
 });
 
@@ -66,15 +67,13 @@ export class DynamoDBService {
     try {
       const params = {
         TableName: this.tableName,
-        FilterExpression: 'id = :id',
-        ExpressionAttributeValues: {
-          ':id': id,
+        Key: {
+          id: id,
         },
       };
 
-      const result = await dynamodb.send(new ScanCommand(params));
-      const items = result.Items as BlogPost[];
-      return items && items.length > 0 ? items[0] : null;
+      const result = await dynamodb.send(new GetCommand(params));
+      return (result.Item as BlogPost) || null;
     } catch (error) {
       console.error('Error fetching post by ID:', error);
       throw error;
@@ -85,13 +84,14 @@ export class DynamoDBService {
     try {
       const params = {
         TableName: this.tableName,
-        FilterExpression: 'slug = :slug',
+        IndexName: 'slug-index', // GSI for querying by slug
+        KeyConditionExpression: 'slug = :slug',
         ExpressionAttributeValues: {
           ':slug': slug,
         },
       };
 
-      const result = await dynamodb.send(new ScanCommand(params));
+      const result = await dynamodb.send(new QueryCommand(params));
       const items = result.Items as BlogPost[];
       return items && items.length > 0 ? items[0] : null;
     } catch (error) {
@@ -134,7 +134,6 @@ export class DynamoDBService {
 
   async createPost(post: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>): Promise<BlogPost> {
     try {
-      const { v4: uuidv4 } = require('uuid');
       const now = new Date().toISOString();
       
       const newPost: BlogPost = {
