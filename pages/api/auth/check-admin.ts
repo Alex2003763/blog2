@@ -9,18 +9,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const token = AuthService.extractTokenFromRequest(req);
-
-    if (!token) {
-      return res.status(200).json(createApiResponse(true, { isAdmin: false }));
-    }
-
     const payload = AuthService.verifyToken(token);
 
-    if (!payload) {
-      return res.status(200).json(createApiResponse(true, { isAdmin: false }));
+    if (payload && payload.isAdmin) {
+      return res.status(200).json(createApiResponse(true, { isAdmin: true }));
     }
-
-    return res.status(200).json(createApiResponse(true, { isAdmin: payload.isAdmin }));
+    
+    return res.status(200).json(createApiResponse(true, { isAdmin: false }));
   } catch (error) {
     console.error('Check admin API error:', error);
     return res.status(500).json(createApiResponse(false, null, 'Internal Server Error'));
