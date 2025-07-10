@@ -79,9 +79,9 @@ cp .env.local.example .env.local
 
 ```env
 # AWS DynamoDB 憑證
-AWS_ACCESS_KEY_ID=your_access_key_id
-AWS_SECRET_ACCESS_KEY=your_secret_access_key
-AWS_REGION=ap-southeast-2
+NETLIFY_AWS_ACCESS_KEY_ID=your_access_key_id
+NETLIFY_AWS_SECRET_ACCESS_KEY=your_secret_access_key
+NETLIFY_AWS_REGION=ap-southeast-2
 DYNAMODB_TABLE_NAME=posts
 
 # 管理員登入憑證
@@ -183,9 +183,9 @@ yarn dev
 在部署平台中設置以下環境變數：
 
 ```
-AWS_ACCESS_KEY_ID=your_access_key_id
-AWS_SECRET_ACCESS_KEY=your_secret_access_key
-AWS_REGION=ap-southeast-2
+NETLIFY_AWS_ACCESS_KEY_ID=your_access_key_id
+NETLIFY_AWS_SECRET_ACCESS_KEY=your_secret_access_key
+NETLIFY_AWS_REGION=ap-southeast-2
 DYNAMODB_TABLE_NAME=posts
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your_secure_password

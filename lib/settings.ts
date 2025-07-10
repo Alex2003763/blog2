@@ -1,13 +1,15 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 
-// 配置 AWS SDK
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
+const client = new DynamoDBClient({
+  region: process.env.NETLIFY_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || "",
+  },
 });
 
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const dynamodb = DynamoDBDocumentClient.from(client);
 const SETTINGS_TABLE = process.env.SETTINGS_TABLE_NAME || 'blog_settings';
 
 export interface AppearanceSettings {
@@ -111,7 +113,7 @@ export class SettingsService {
         }
       };
 
-      const result = await dynamodb.get(params).promise();
+      const result = await dynamodb.send(new GetCommand(params));
       
       if (result.Item) {
         return result.Item.settings as AppearanceSettings;
@@ -134,7 +136,7 @@ export class SettingsService {
         }
       };
 
-      const result = await dynamodb.get(params).promise();
+      const result = await dynamodb.send(new GetCommand(params));
       
       if (result.Item) {
         return result.Item.settings as SiteSettings;
@@ -159,7 +161,7 @@ export class SettingsService {
         }
       };
 
-      await dynamodb.put(params).promise();
+      await dynamodb.send(new PutCommand(params));
       return true;
     } catch (error) {
       console.error('Error updating appearance settings:', error);
@@ -179,7 +181,7 @@ export class SettingsService {
         }
       };
 
-      await dynamodb.put(params).promise();
+      await dynamodb.send(new PutCommand(params));
       return true;
     } catch (error) {
       console.error('Error updating site settings:', error);

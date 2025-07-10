@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, ScanCommand, PutCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({
   region: process.env.NETLIFY_AWS_REGION,
@@ -36,7 +36,7 @@ export class DynamoDBService {
         TableName: this.tableName,
       };
 
-      const result = await dynamodb.scan(params).promise();
+      const result = await dynamodb.send(new ScanCommand(params));
       return (result.Items as BlogPost[]) || [];
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -54,7 +54,7 @@ export class DynamoDBService {
         },
       };
 
-      const result = await dynamodb.scan(params).promise();
+      const result = await dynamodb.send(new ScanCommand(params));
       return (result.Items as BlogPost[]) || [];
     } catch (error) {
       console.error('Error fetching published posts:', error);
@@ -72,7 +72,7 @@ export class DynamoDBService {
         },
       };
 
-      const result = await dynamodb.scan(params).promise();
+      const result = await dynamodb.send(new ScanCommand(params));
       const items = result.Items as BlogPost[];
       return items && items.length > 0 ? items[0] : null;
     } catch (error) {
@@ -91,7 +91,7 @@ export class DynamoDBService {
         },
       };
 
-      const result = await dynamodb.scan(params).promise();
+      const result = await dynamodb.send(new ScanCommand(params));
       const items = result.Items as BlogPost[];
       return items && items.length > 0 ? items[0] : null;
     } catch (error) {
@@ -124,7 +124,7 @@ export class DynamoDBService {
         ExpressionAttributeValues: expressionAttributeValues,
       };
 
-      const result = await dynamodb.scan(params).promise();
+      const result = await dynamodb.send(new ScanCommand(params));
       return (result.Items as BlogPost[]) || [];
     } catch (error) {
       console.error('Error searching posts:', error);
@@ -149,7 +149,7 @@ export class DynamoDBService {
         Item: newPost,
       };
 
-      await dynamodb.put(params).promise();
+      await dynamodb.send(new PutCommand(params));
       return newPost;
     } catch (error) {
       console.error('Error creating post:', error);
@@ -185,7 +185,7 @@ export class DynamoDBService {
       params.UpdateExpression = `SET ${updateExpressions.join(', ')}`;
       params.ExpressionAttributeValues = expressionAttributeValues;
 
-      const result = await dynamodb.update(params).promise();
+      const result = await dynamodb.send(new UpdateCommand(params));
       return (result.Attributes as BlogPost) || null;
     } catch (error) {
       console.error('Error updating post:', error);
@@ -200,7 +200,7 @@ export class DynamoDBService {
         Key: { id, created_at },
       };
 
-      await dynamodb.delete(params).promise();
+      await dynamodb.send(new DeleteCommand(params));
       return true;
     } catch (error) {
       console.error('Error deleting post:', error);
