@@ -1,13 +1,15 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
-// 配置 AWS SDK
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
+const client = new DynamoDBClient({
+  region: process.env.NETLIFY_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || "",
+  },
 });
 
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const dynamodb = DynamoDBDocumentClient.from(client);
 
 export interface BlogPost {
   id: string;
