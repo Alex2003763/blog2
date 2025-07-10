@@ -5,10 +5,15 @@ import { createApiResponse, slugify, generateExcerpt } from '../../../lib/utils'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { id } = req.query;
+    let { id } = req.query;
     
     if (!id || typeof id !== 'string') {
-      return res.status(400).json(createApiResponse(false, null, '無效的文章 ID'));
+      return res.status(400).json(createApiResponse(false, null, 'Invalid post ID'));
+    }
+
+    // Sanitize the ID to remove trailing slashes
+    if (id.endsWith('/')) {
+      id = id.slice(0, -1);
     }
 
     switch (req.method) {
@@ -19,11 +24,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'DELETE':
         return await handleDeletePost(req, res, id);
       default:
-        return res.status(405).json(createApiResponse(false, null, '方法不允許'));
+        return res.status(405).json(createApiResponse(false, null, 'Method not allowed'));
     }
   } catch (error) {
     console.error('Post API error:', error);
-    return res.status(500).json(createApiResponse(false, null, '伺服器錯誤'));
+    return res.status(500).json(createApiResponse(false, null, 'Internal server error'));
   }
 }
 
@@ -32,7 +37,7 @@ async function handleGetPost(req: NextApiRequest, res: NextApiResponse, id: stri
     const post = await dynamoDBService.getPostById(id);
     
     if (!post) {
-      return res.status(404).json(createApiResponse(false, null, '文章不存在'));
+      return res.status(404).json(createApiResponse(false, null, 'Post not found'));
     }
 
     // 如果文章未發佈，只有管理員可以查看
@@ -44,7 +49,7 @@ async function handleGetPost(req: NextApiRequest, res: NextApiResponse, id: stri
     return res.status(200).json(createApiResponse(true, post));
   } catch (error) {
     console.error('Get post error:', error);
-    return res.status(500).json(createApiResponse(false, null, '獲取文章失敗'));
+    return res.status(500).json(createApiResponse(false, null, 'Failed to fetch post'));
   }
 }
 
@@ -56,13 +61,13 @@ async function handleUpdatePost(req: NextApiRequest, res: NextApiResponse, id: s
 
     const postToUpdate = await dynamoDBService.getPostById(id);
     if (!postToUpdate) {
-      return res.status(404).json(createApiResponse(false, null, '文章不存在'));
+      return res.status(404).json(createApiResponse(false, null, 'Post not found'));
     }
 
     const { title, content, published } = req.body;
 
     if (!title && !content && published === undefined) {
-      return res.status(400).json(createApiResponse(false, null, '至少需要提供一個更新字段'));
+      return res.status(400).json(createApiResponse(false, null, 'At least one field to update must be provided'));
     }
 
     const updates: any = {};
@@ -84,13 +89,13 @@ async function handleUpdatePost(req: NextApiRequest, res: NextApiResponse, id: s
     const updatedPost = await dynamoDBService.updatePost(id, postToUpdate.created_at, updates);
     
     if (!updatedPost) {
-      return res.status(404).json(createApiResponse(false, null, '文章不存在或更新失敗'));
+      return res.status(404).json(createApiResponse(false, null, 'Post not found or update failed'));
     }
 
     return res.status(200).json(createApiResponse(true, updatedPost));
   } catch (error) {
     console.error('Update post error:', error);
-    return res.status(500).json(createApiResponse(false, null, '更新文章失敗'));
+    return res.status(500).json(createApiResponse(false, null, 'Failed to update post'));
   }
 }
 
@@ -102,18 +107,18 @@ async function handleDeletePost(req: NextApiRequest, res: NextApiResponse, id: s
 
     const postToDelete = await dynamoDBService.getPostById(id);
     if (!postToDelete) {
-      return res.status(404).json(createApiResponse(false, null, '文章不存在'));
+      return res.status(404).json(createApiResponse(false, null, 'Post not found'));
     }
 
     const success = await dynamoDBService.deletePost(id, postToDelete.created_at);
     
     if (!success) {
-      return res.status(404).json(createApiResponse(false, null, '文章不存在或刪除失敗'));
+      return res.status(404).json(createApiResponse(false, null, 'Post not found or delete failed'));
     }
 
-    return res.status(200).json(createApiResponse(true, { message: '文章已刪除' }));
+    return res.status(200).json(createApiResponse(true, { message: 'Post deleted successfully' }));
   } catch (error) {
     console.error('Delete post error:', error);
-    return res.status(500).json(createApiResponse(false, null, '刪除文章失敗'));
+    return res.status(500).json(createApiResponse(false, null, 'Failed to delete post'));
   }
 }

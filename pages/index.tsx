@@ -8,15 +8,17 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Pagination from '../components/Pagination';
 import FeaturedPost from '../components/FeaturedPost';
+import RecommendedPosts from '../components/RecommendedPosts';
 import { CalendarIcon, UserIcon, ArrowRightIcon } from '../components/icons';
 
 interface HomeProps {
   featuredPost: BlogPost | null;
+  recommendedPosts: BlogPost[];
   initialPosts: BlogPost[];
   initialTotalPages: number;
 }
 
-export default function Home({ featuredPost, initialPosts, initialTotalPages }: HomeProps) {
+export default function Home({ featuredPost, recommendedPosts, initialPosts, initialTotalPages }: HomeProps) {
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
@@ -55,7 +57,7 @@ export default function Home({ featuredPost, initialPosts, initialTotalPages }: 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="flex flex-col min-h-screen bg-background">
       <Head>
         <title>Blog Platform - Share Your Stories</title>
         <meta name="description" content="A modern blog platform built with Next.js and DynamoDB" />
@@ -65,74 +67,73 @@ export default function Home({ featuredPost, initialPosts, initialTotalPages }: 
 
       <Header showAdminLink={true} />
 
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-8 flex justify-center">
-          <input
-            type="text"
-            placeholder="Search posts..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="w-full max-w-lg px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
-          />
-        </div>
+      <main className="container flex-grow px-4 mx-auto">
+        {/* Hero Section */}
+        <section className="mb-8 text-center">
+          <div className="mt-8">
+            <input
+              type="text"
+              placeholder="Search posts..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="w-full max-w-md px-4 py-2 border rounded-md bg-secondary focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+        </section>
 
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-8">
             <section>
-              {posts.length === 0 && !loading ? ( // Only show "No posts yet" if not loading and no posts
-                <div className="text-center py-12 lg:py-24">
+              <h2 className="mb-4 text-2xl font-bold text-foreground">Latest Posts</h2>
+              {posts.length === 0 && !loading ? (
+                <div className="py-12 text-center lg:py-24">
                   <div className="max-w-md mx-auto">
-                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full bg-secondary">
+                      <svg className="w-10 h-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">No posts found</h2>
-                    <p className="text-gray-600 dark:text-gray-300">Try a different search term or clear your search.</p>
+                    <h2 className="mb-3 text-xl font-semibold text-foreground">No posts found</h2>
+                    <p className="text-muted-foreground">Try a different search term or clear your search.</p>
                   </div>
                 </div>
               ) : (
                 <>
                   <div className={`transition-opacity duration-300 ${loading ? 'opacity-50' : 'opacity-100'}`}>
                     {posts.length > 0 && (
-                      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="grid gap-6 sm:grid-cols-2">
                         {posts.map((post) => (
                           <article
                             key={post.id}
-                            className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 h-full flex flex-col hover:-translate-y-1"
+                            className="flex flex-col h-full overflow-hidden transition-all duration-300 transform border rounded-lg group bg-card hover:shadow-lg hover:-translate-y-1"
                           >
-                            <div className="p-4 sm:p-5 flex-grow flex flex-col">
-                              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            <div className="flex flex-col flex-grow p-5">
+                              <h2 className="mb-2 text-lg font-semibold transition-colors text-foreground group-hover:text-primary">
                                 <Link href={`/posts/${post.slug}`} className="line-clamp-2">
                                   {post.title}
                                 </Link>
                               </h2>
                               
                               {post.excerpt && (
-                                <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 leading-relaxed text-sm flex-grow">
+                                <p className="flex-grow mb-4 text-sm text-muted-foreground line-clamp-2">
                                   {post.excerpt}
                                 </p>
                               )}
                               
-                              <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between text-xs text-gray-500 dark:text-gray-400 mb-4 space-y-2 xs:space-y-0 mt-auto">
-                                <div className="flex items-center space-x-1">
-                                  <UserIcon className="w-3 h-3" />
+                              <div className="flex items-end justify-between mt-auto">
+                                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                                  <UserIcon className="w-3.5 h-3.5" />
                                   <span className="truncate">{post.author}</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  <CalendarIcon className="w-3 h-3" />
+                                  <span className="px-1">·</span>
+                                  <CalendarIcon className="w-3.5 h-3.5" />
                                   <span>{formatDate(post.created_at)}</span>
                                 </div>
+                                <Link href={`/posts/${post.slug}`} className="inline-flex items-center text-sm font-medium text-primary hover:underline">
+                                  Read More
+                                  <ArrowRightIcon className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                                </Link>
                               </div>
-                              
-                              <Link
-                                href={`/posts/${post.slug}`}
-                                className="inline-flex items-center space-x-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-sm group-hover:translate-x-1 transition-transform"
-                              >
-                                <span>Read more</span>
-                                <ArrowRightIcon className="w-3 h-3" />
-                              </Link>
                             </div>
                           </article>
                         ))}
@@ -151,10 +152,15 @@ export default function Home({ featuredPost, initialPosts, initialTotalPages }: 
           </div>
 
           {/* Sidebar */}
-          <aside className="lg:col-span-4 mt-8 lg:mt-0">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Featured Posts</h3>
-            <div className="sticky top-24 space-y-8 max-w-md lg:max-w-none mx-auto">
-              {featuredPost && <FeaturedPost post={featuredPost} />}
+          <aside className="mt-12 lg:col-span-4 lg:mt-0">
+            <div className="sticky space-y-6 top-24">
+              {featuredPost && (
+                <section>
+                  <h2 className="mb-4 text-xl font-bold text-foreground">Featured Post</h2>
+                  <FeaturedPost post={featuredPost} />
+                </section>
+              )}
+              <RecommendedPosts posts={recommendedPosts} />
             </div>
           </aside>
         </div>
@@ -174,11 +180,13 @@ export const getStaticProps: GetStaticProps = async () => {
   const totalPages = Math.ceil(totalPosts / postsPerPage);
   
   const featuredPost = totalPosts > 0 ? allPosts[0] : null;
-  const initialPosts = totalPosts > 0 ? allPosts.slice(featuredPost ? 1 : 0, postsPerPage) : [];
+  const recommendedPosts = allPosts.slice(1, 4); // Get next 3 posts for recommendation
+  const initialPosts = allPosts.slice(0, postsPerPage);
 
   return {
     props: {
       featuredPost,
+      recommendedPosts,
       initialPosts,
       initialTotalPages: totalPages,
     },

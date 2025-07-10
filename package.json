@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.844.0",
     "@aws-sdk/lib-dynamodb": "^3.844.0",
+    "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@uiw/react-md-editor": "^3.25.6",
     "aws-sdk": "^2.1504.0",
@@ -22,6 +23,7 @@
     "next-themes": "^0.3.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-hot-toast": "^2.5.2",
     "rehype-raw": "^7.0.0",
     "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",

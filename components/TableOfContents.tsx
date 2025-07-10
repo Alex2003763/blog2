@@ -71,41 +71,38 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
   }
 
   return (
-    <div className="table-of-contents">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex items-center space-x-2 mb-4">
-          <LinkIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Catalog
-          </h3>
-        </div>
-        
-        <nav>
-          <ul className="space-y-1">
-            {tocItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => scrollToHeading(item.id)}
-                  className={`
-                    w-full text-left text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-400
-                    ${activeId === item.id
-                      ? 'text-blue-600 dark:text-blue-400 font-medium border-l-2 border-blue-600 dark:border-blue-400 pl-3'
-                      : 'text-gray-600 dark:text-gray-400 border-l-2 border-transparent pl-3'
-                    }
-                    ${item.level === 2 ? 'ml-0' : ''}
-                    ${item.level === 3 ? 'ml-4' : ''}
-                    ${item.level === 4 ? 'ml-8' : ''}
-                    ${item.level === 5 ? 'ml-12' : ''}
-                    ${item.level === 6 ? 'ml-16' : ''}
-                  `}
-                >
-                  {item.text}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+    <div className="sticky p-4 bg-gray-100 border border-gray-200 rounded-lg shadow-sm top-24 dark:bg-gray-800/50 dark:border-gray-700/50">
+      <div className="flex items-center mb-4 space-x-2">
+        <LinkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          Table of Contents
+        </h3>
       </div>
+      <nav>
+        <ul className="space-y-2">
+          {tocItems.map((item) => (
+            <li key={item.id}>
+              <button
+                onClick={() => scrollToHeading(item.id)}
+                className={`
+                  w-full text-left text-sm transition-colors
+                  ${activeId === item.id
+                    ? 'text-blue-600 dark:text-blue-400 font-bold'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                  }
+                  ${item.level === 2 ? 'pl-2' : ''}
+                  ${item.level === 3 ? 'pl-6' : ''}
+                  ${item.level === 4 ? 'pl-10' : ''}
+                  ${item.level === 5 ? 'pl-14' : ''}
+                  ${item.level === 6 ? 'pl-18' : ''}
+                `}
+              >
+                {item.text}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 }

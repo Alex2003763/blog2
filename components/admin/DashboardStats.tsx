@@ -22,15 +22,15 @@ function StatCard({ title, value, icon: Icon, change, changeType = 'neutral' }: 
   }[changeType];
 
   return (
-    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
+    <div className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <div className="p-6">
         <div className="flex items-center">
           <div className="flex-shrink-0">
-            <Icon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
-          <div className="ml-4 w-0 flex-1">
+          <div className="flex-1 w-0 ml-4">
             <dl>
-              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+              <dt className="text-sm font-medium text-gray-500 truncate dark:text-gray-400">
                 {title}
               </dt>
               <dd className="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -44,9 +44,6 @@ function StatCard({ title, value, icon: Icon, change, changeType = 'neutral' }: 
             <div className="flex items-center">
               <span className={`text-sm font-medium ${changeColor}`}>
                 {change}
-              </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                from last month
               </span>
             </div>
           </div>
@@ -114,18 +111,18 @@ export default function DashboardStats() {
 
   if (stats.loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
+          <div key={i} className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6">
               <div className="animate-pulse">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <div className="h-8 w-8 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                    <div className="w-8 h-8 bg-gray-300 rounded dark:bg-gray-600"></div>
                   </div>
-                  <div className="ml-4 w-0 flex-1">
-                    <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
-                    <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/2 mt-2"></div>
+                  <div className="flex-1 w-0 ml-4">
+                    <div className="w-3/4 h-4 bg-gray-300 rounded dark:bg-gray-600"></div>
+                    <div className="w-1/2 h-8 mt-2 bg-gray-300 rounded dark:bg-gray-600"></div>
                   </div>
                 </div>
               </div>
@@ -137,27 +134,21 @@ export default function DashboardStats() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       <StatCard
         title="Total Posts"
         value={stats.totalPosts}
         icon={DocumentTextIcon}
-        change="+12%"
-        changeType="increase"
       />
       <StatCard
         title="Published Posts"
         value={stats.publishedPosts}
         icon={EyeIcon}
-        change="+8%"
-        changeType="increase"
       />
       <StatCard
         title="Draft Posts"
         value={stats.draftPosts}
         icon={CalendarIcon}
-        change="+2%"
-        changeType="increase"
       />
     </div>
   );

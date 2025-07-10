@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { admin, page = '1', limit = '6', q } = req.query;
+    const { admin, page = '1', limit = '6', q, status } = req.query;
     const currentPage = parseInt(page as string, 10);
     const postsPerPage = parseInt(limit as string, 10);
 
@@ -36,6 +36,13 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
     } else {
       res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
       allPosts = await dynamoDBService.getPublishedPosts();
+    }
+
+    // Filter by status if provided
+    if (status === 'published') {
+      allPosts = allPosts.filter(post => post.published);
+    } else if (status === 'draft') {
+      allPosts = allPosts.filter(post => !post.published);
     }
 
     allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());

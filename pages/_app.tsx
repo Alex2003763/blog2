@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { SettingsProvider, useSettings } from '../contexts/SettingsContext';
 import '../styles/globals.css';
 import { useEffect, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -51,6 +52,17 @@ export default function App({ Component, pageProps }: AppProps) {
     <Providers>
       <AppHead />
       <main className={inter.className}>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#333',
+              color: '#fff',
+            },
+          }}
+        />
         <Component {...pageProps} />
       </main>
     </Providers>

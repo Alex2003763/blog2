@@ -21,66 +21,59 @@ export default function Header({
   const { siteSettings, loading } = useSettings();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-      <div className="container mx-auto px-4 py-3 sm:py-4">
-        <div className="flex justify-between items-center">
-          {/* Logo Section */}
-          <div className="flex items-center min-w-0">
-            <Link href="/" className="group flex items-center space-x-2 sm:space-x-3">
-              <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg group-hover:shadow-xl transition-shadow" style={{ background: `linear-gradient(135deg, var(--primary-color), var(--accent-color))` }}>
-                {loading ? (
-                  <BookOpenIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-                ) : (
-                  <img src={siteSettings.favicon} alt="Favicon" className="w-5 h-5 sm:w-6 sm:h-6" />
-                )}
-              </div>
-              <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent truncate">
-                  {loading ? 'Blog Platform' : siteSettings.siteName}
-                </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                  {loading ? 'Share your stories' : siteSettings.siteDescription}
-                </p>
-              </div>
-            </Link>
-          </div>
-
-          {/* Navigation Section */}
-          <nav className="flex items-center space-x-2 sm:space-x-4">
-            {showBackButton && (
-              <Link
-                href={backHref}
-                className="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-2 sm:px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <HomeIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">{backText}</span>
-              </Link>
-            )}
-
-            {showAdminLink && (
-              <Link
-                href="/admin"
-                className="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-2 sm:px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <span className="hidden sm:inline">Admin Dashboard</span>
-                <span className="sm:hidden">Admin</span>
-              </Link>
-            )}
-
-            {/* Theme Toggle */}
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <SunIcon className="w-5 h-5" />
+    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+      <div className="container flex items-center justify-between h-16 px-4 mx-auto">
+        {/* Logo Section */}
+        <div className="flex items-center min-w-0">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="p-2 rounded-lg bg-secondary text-secondary-foreground">
+              {loading ? (
+                <BookOpenIcon className="w-5 h-5" />
               ) : (
-                <MoonIcon className="w-5 h-5" />
+                <img src={siteSettings.favicon} alt="Favicon" className="w-5 h-5" />
               )}
-            </button>
-          </nav>
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-lg font-semibold truncate text-foreground">
+                {loading ? 'Blog Platform' : siteSettings.siteName}
+              </h1>
+            </div>
+          </Link>
         </div>
+
+        {/* Navigation Section */}
+        <nav className="flex items-center space-x-2">
+          {showBackButton && (
+            <Link
+              href={backHref}
+              className="flex items-center px-3 py-2 space-x-2 text-sm font-medium transition-colors rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+            >
+              <HomeIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">{backText}</span>
+            </Link>
+          )}
+
+          {showAdminLink && (
+            <Link
+              href="/admin"
+              className="flex items-center px-3 py-2 space-x-2 text-sm font-medium transition-colors rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+            >
+              <span className="hidden sm:inline">Admin</span>
+              <span className="sm:hidden">Admin</span>
+            </Link>
+          )}
+
+          {/* Theme Toggle */}
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="relative p-2 transition-colors rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+            aria-label="Toggle theme"
+          >
+            <SunIcon className="w-5 h-5 transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0" />
+            <MoonIcon className="absolute w-5 h-5 transition-all scale-0 rotate-90 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </button>
+        </nav>
       </div>
     </header>
   );

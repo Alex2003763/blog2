@@ -96,13 +96,19 @@ export class DynamoDBService {
     try {
       const params = {
         TableName: this.tableName,
-        Key: {
-          id: id,
+        KeyConditionExpression: 'id = :id',
+        ExpressionAttributeValues: {
+          ':id': id,
         },
       };
 
-      const result = await dynamodb.send(new GetCommand(params));
-      return (result.Item as BlogPost) || null;
+      const result = await dynamodb.send(new QueryCommand(params));
+      
+      if (result.Items && result.Items.length > 0) {
+        return result.Items[0] as BlogPost;
+      }
+      
+      return null;
     } catch (error) {
       console.error('Error fetching post by ID:', error);
       throw error;
