@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@uiw/react-md-editor', '@uiw/react-markdown-preview'],
+  transpilePackages: ['@uiw/react-md-editor', '@uiw/react-markdown-preview', 'react-hot-toast'],
   reactStrictMode: true,
   swcMinify: true,
   env: {
