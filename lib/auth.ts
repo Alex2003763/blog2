@@ -29,7 +29,10 @@ export class AuthService {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
   }
 
-  static verifyToken(token: string): AuthTokenPayload | null {
+  static verifyToken(token: string | null): AuthTokenPayload | null {
+    if (!token) {
+      return null;
+    }
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
       return decoded;

@@ -2,14 +2,31 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, ScanCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
 
-const client = new DynamoDBClient({
-  region: process.env.NETLIFY_AWS_REGION || process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || "",
-  },
-});
+// A function to create and configure the DynamoDB client.
+// This helps to ensure that all necessary environment variables are present before initialization.
+function createDynamoDBClient() {
+  const region = process.env.NETLIFY_AWS_REGION;
+  const accessKeyId = process.env.NETLIFY_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY;
 
+  // Check for the presence of required AWS credentials and region.
+  // If any are missing, throw a specific error to aid in debugging.
+  if (!region || !accessKeyId || !secretAccessKey) {
+    throw new Error(
+      'Missing AWS configuration. Ensure NETLIFY_AWS_REGION, NETLIFY_AWS_ACCESS_KEY_ID, and NETLIFY_AWS_SECRET_ACCESS_KEY are set in your environment variables.'
+    );
+  }
+
+  return new DynamoDBClient({
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+}
+
+const client = createDynamoDBClient();
 const dynamodb = DynamoDBDocumentClient.from(client);
 
 export interface BlogPost {
@@ -28,7 +45,11 @@ export class DynamoDBService {
   private tableName: string;
 
   constructor() {
-    this.tableName = process.env.DYNAMODB_TABLE_NAME || 'posts';
+    // Also check for DYNAMODB_TABLE_NAME, which is crucial for the service to work.
+    if (!process.env.DYNAMODB_TABLE_NAME) {
+        throw new Error('Missing DYNAMODB_TABLE_NAME environment variable.');
+    }
+    this.tableName = process.env.DYNAMODB_TABLE_NAME;
   }
 
   async getAllPosts(): Promise<BlogPost[]> {
