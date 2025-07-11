@@ -57,7 +57,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex flex-col justify-center min-h-screen py-12 bg-background sm:px-6 lg:px-8">
       <Head>
         <title>Admin Login - Blog Platform</title>
         <meta name="description" content="Admin login page" />
@@ -66,26 +66,26 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-foreground">
             <Link href="/">Blog Platform</Link>
           </h1>
-          <h2 className="mt-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="mt-6 text-2xl font-semibold text-foreground">
             Admin Login
           </h2>
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="px-4 py-8 shadow bg-card sm:rounded-lg sm:px-10 border-border">
           {error && (
-            <div className="mb-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded">
+            <div className="px-4 py-3 mb-4 border rounded bg-destructive/10 border-destructive/20 text-destructive-foreground">
               {error}
             </div>
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="username" className="block text-sm font-medium text-foreground">
                 Username
               </label>
               <div className="mt-1">
@@ -96,14 +96,14 @@ export default function LoginPage() {
                   required
                   value={formData.username}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-border bg-background text-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                   placeholder="Enter your username"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="block text-sm font-medium text-foreground">
                 Password
               </label>
               <div className="mt-1">
@@ -114,7 +114,7 @@ export default function LoginPage() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-border bg-background text-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                   placeholder="Enter your password"
                 />
               </div>
@@ -124,7 +124,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="flex justify-center w-full px-4 py-2 text-sm font-medium border border-transparent rounded-md shadow-sm text-primary-foreground bg-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
               >
                 {loading ? 'Logging in...' : 'Login'}
               </button>
@@ -134,7 +134,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <Link
               href="/"
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 text-sm"
+              className="text-sm text-primary hover:opacity-80"
             >
               Back to Home
             </Link>

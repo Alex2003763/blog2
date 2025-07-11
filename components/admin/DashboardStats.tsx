@@ -16,24 +16,24 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon: Icon, change, changeType = 'neutral' }: StatCardProps) {
   const changeColor = {
-    increase: 'text-green-600 dark:text-green-400',
-    decrease: 'text-red-600 dark:text-red-400',
-    neutral: 'text-gray-600 dark:text-gray-400'
+    increase: 'text-green-500',
+    decrease: 'text-red-500',
+    neutral: 'text-muted-foreground'
   }[changeType];
 
   return (
-    <div className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+    <div className="overflow-hidden border rounded-lg shadow-sm bg-card border-border">
       <div className="p-6">
         <div className="flex items-center">
           <div className="flex-shrink-0">
-            <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <Icon className="w-8 h-8 text-primary" />
           </div>
           <div className="flex-1 w-0 ml-4">
             <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate dark:text-gray-400">
+              <dt className="text-sm font-medium truncate text-muted-foreground">
                 {title}
               </dt>
-              <dd className="text-2xl font-semibold text-gray-900 dark:text-white">
+              <dd className="text-2xl font-semibold text-foreground">
                 {value}
               </dd>
             </dl>
@@ -113,16 +113,16 @@ export default function DashboardStats() {
     return (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+          <div key={i} className="overflow-hidden border rounded-lg shadow-sm bg-card border-border">
             <div className="p-6">
               <div className="animate-pulse">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-gray-300 rounded dark:bg-gray-600"></div>
+                    <div className="w-8 h-8 rounded bg-muted"></div>
                   </div>
                   <div className="flex-1 w-0 ml-4">
-                    <div className="w-3/4 h-4 bg-gray-300 rounded dark:bg-gray-600"></div>
-                    <div className="w-1/2 h-8 mt-2 bg-gray-300 rounded dark:bg-gray-600"></div>
+                    <div className="w-3/4 h-4 rounded bg-muted"></div>
+                    <div className="w-1/2 h-8 mt-2 rounded bg-muted"></div>
                   </div>
                 </div>
               </div>

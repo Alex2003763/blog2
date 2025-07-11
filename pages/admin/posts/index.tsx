@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -22,11 +22,7 @@ export default function PostsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchPosts(currentPage);
-  }, [currentPage, searchTerm, statusFilter]);
-
-  const fetchPosts = async (page: number) => {
+  const fetchPosts = useCallback(async (page: number) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('auth_token');
@@ -63,10 +59,21 @@ export default function PostsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, statusFilter]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchPosts(1);
+    }, 500); // 500ms debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, statusFilter, fetchPosts]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    fetchPosts(page);
   };
 
   const handleDeletePost = (postId: string) => {
@@ -162,13 +169,13 @@ export default function PostsPage() {
           {/* Header Actions */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center space-x-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-foreground">
                 All Posts
               </h2>
             </div>
             <Link
               href="/admin/posts/new"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium transition-opacity border border-transparent rounded-md shadow-sm text-primary-foreground bg-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               <PlusIcon className="w-4 h-4 mr-2" />
               New Post
@@ -176,19 +183,22 @@ export default function PostsPage() {
           </div>
 
           {/* Filters */}
-          <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+          <div className="p-4 border rounded-lg shadow-sm bg-card border-border">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* Search */}
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
+                  <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <input
                   type="text"
                   placeholder="Search posts..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="block w-full py-2 pl-10 pr-3 leading-5 border rounded-md bg-background border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
@@ -197,7 +207,7 @@ export default function PostsPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as 'all' | 'published' | 'draft')}
-                  className="block w-full px-3 py-2 leading-5 text-gray-900 bg-white border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="block w-full px-3 py-2 leading-5 border rounded-md bg-background border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   <option value="all">All Status</option>
                   <option value="published">Published</option>
@@ -209,92 +219,92 @@ export default function PostsPage() {
 
           {/* Error Message */}
           {error && (
-            <div className="px-4 py-3 text-red-700 border border-red-200 rounded-md bg-red-50 dark:bg-red-900 dark:border-red-700 dark:text-red-300">
+            <div className="px-4 py-3 border rounded-md text-destructive-foreground bg-destructive/10 border-destructive/20">
               {error}
             </div>
           )}
 
           {/* Posts List */}
           {loading ? (
-            <div className="p-8 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div className="p-8 border rounded-lg shadow-sm bg-card border-border">
               <div className="space-y-4 animate-pulse">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="flex items-center space-x-4">
-                    <div className="w-1/4 h-4 bg-gray-300 rounded dark:bg-gray-600"></div>
-                    <div className="w-1/2 h-4 bg-gray-300 rounded dark:bg-gray-600"></div>
-                    <div className="w-1/4 h-4 bg-gray-300 rounded dark:bg-gray-600"></div>
+                    <div className="w-1/4 h-4 rounded bg-muted"></div>
+                    <div className="w-1/2 h-4 rounded bg-muted"></div>
+                    <div className="w-1/4 h-4 rounded bg-muted"></div>
                   </div>
                 ))}
               </div>
             </div>
           ) : posts.length === 0 ? (
             <div className="py-12 text-center">
-              <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
+              <h3 className="mb-4 text-lg font-medium text-foreground">
                 No posts found
               </h3>
-              <p className="mb-4 text-gray-600 dark:text-gray-400">
+              <p className="mb-4 text-muted-foreground">
                 Try adjusting your search or filter criteria.
               </p>
             </div>
           ) : (
             <>
-              <div className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+              <div className="overflow-hidden border rounded-lg shadow-sm bg-card border-border">
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-900">
+                  <table className="min-w-full divide-y divide-border">
+                    <thead className="bg-muted/50">
                       <tr>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
                           Title
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
                           Status
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
                           Author
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
                           Date
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-400">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-right uppercase text-muted-foreground">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                    <tbody className="divide-y bg-card divide-border">
                       {posts.map((post) => (
-                        <tr key={post.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <tr key={post.id} className="hover:bg-muted">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            <div className="text-sm font-medium text-foreground">
                               {post.title}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               post.published
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                                ? 'bg-green-500/10 text-green-500'
+                                : 'bg-muted text-muted-foreground'
                             }`}>
                               {post.published ? 'Published' : 'Draft'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+                          <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">
                             {post.author}
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+                          <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">
                             {formatDateTime(post.updated_at)}
                           </td>
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <div className="flex items-center justify-end space-x-3">
                               <Link
                                 href={`/admin/posts/${post.id}`}
-                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                className="transition-opacity text-primary hover:opacity-80"
                               >
                                 Edit
                               </Link>
                               {post.published && (
                                 <Link
                                   href={`/posts/${post.slug}`}
-                                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300"
+                                  className="transition-colors text-muted-foreground hover:text-foreground"
                                 >
                                   View
                                 </Link>
@@ -303,15 +313,15 @@ export default function PostsPage() {
                                 onClick={() => handleTogglePublish(post.id, post.published)}
                                 className={`${
                                   post.published
-                                    ? 'text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300'
-                                    : 'text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300'
-                                }`}
+                                    ? 'text-yellow-500 hover:opacity-80'
+                                    : 'text-green-500 hover:opacity-80'
+                                } transition-opacity`}
                               >
                                 {post.published ? 'Unpublish' : 'Publish'}
                               </button>
                               <button
                                 onClick={() => handleDeletePost(post.id)}
-                                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                className="transition-opacity text-destructive hover:opacity-80"
                               >
                                 Delete
                               </button>

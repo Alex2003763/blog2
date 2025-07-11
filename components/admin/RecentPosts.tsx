@@ -35,17 +35,17 @@ export default function RecentPosts() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Recent Posts</h3>
+      <div className="border rounded-lg shadow-sm bg-card border-border">
+        <div className="px-6 py-4 border-b border-border">
+          <h3 className="text-lg font-medium text-foreground">Recent Posts</h3>
         </div>
         <div className="p-6">
-          <div className="animate-pulse space-y-4">
+          <div className="space-y-4 animate-pulse">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="flex items-center space-x-4">
-                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/4"></div>
-                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/4"></div>
+                <div className="w-1/4 h-4 rounded bg-muted"></div>
+                <div className="w-1/2 h-4 rounded bg-muted"></div>
+                <div className="w-1/4 h-4 rounded bg-muted"></div>
               </div>
             ))}
           </div>
@@ -55,25 +55,25 @@ export default function RecentPosts() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="border rounded-lg shadow-sm bg-card border-border">
+      <div className="px-6 py-4 border-b border-border">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Recent Posts</h3>
+          <h3 className="text-lg font-medium text-foreground">Recent Posts</h3>
           <Link
             href="/admin/posts"
-            className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-sm transition-opacity text-primary hover:opacity-80"
           >
             View all
           </Link>
         </div>
       </div>
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="divide-y divide-border">
         {posts.length === 0 ? (
           <div className="px-6 py-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400">No posts yet</p>
+            <p className="text-muted-foreground">No posts yet</p>
             <Link
               href="/admin/posts/new"
-              className="mt-2 inline-block text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              className="inline-block mt-2 transition-opacity text-primary hover:opacity-80"
             >
               Create your first post
             </Link>
@@ -86,33 +86,33 @@ export default function RecentPosts() {
                   <div className="flex items-center space-x-3">
                     <Link
                       href={`/admin/posts/${post.id}`}
-                      className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 truncate"
+                      className="text-sm font-medium truncate transition-colors text-foreground hover:text-primary"
                     >
                       {post.title}
                     </Link>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       post.published
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                        ? 'bg-green-500/10 text-green-500'
+                        : 'bg-muted text-muted-foreground'
                     }`}>
                       {post.published ? 'Published' : 'Draft'}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {formatDateTime(post.updated_at)}
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Link
                     href={`/admin/posts/${post.id}`}
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
+                    className="text-sm transition-opacity text-primary hover:opacity-80"
                   >
                     Edit
                   </Link>
                   {post.published && (
                     <Link
                       href={`/posts/${post.slug}`}
-                      className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 text-sm"
+                      className="text-sm transition-colors text-muted-foreground hover:text-foreground"
                     >
                       View
                     </Link>

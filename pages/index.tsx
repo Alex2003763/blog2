@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { GetStaticProps } from 'next';
 import { BlogPost, dynamoDBService } from '../lib/dynamodb';
-import { formatDate } from '../lib/utils';
+import { formatDate, isContentJustAnImage } from '../lib/utils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Pagination from '../components/Pagination';
 import FeaturedPost from '../components/FeaturedPost';
 import RecommendedPosts from '../components/RecommendedPosts';
-import { CalendarIcon, UserIcon, ArrowRightIcon } from '../components/icons';
+import { CalendarIcon, UserIcon, ArrowRightIcon, PhotographIcon } from '../components/icons';
 
 interface HomeProps {
   featuredPost: BlogPost | null;
@@ -25,7 +25,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const fetchPosts = async (page: number, query: string = '') => {
+  const fetchPosts = useCallback(async (page: number, query: string = '') => {
     setLoading(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -39,11 +39,24 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
       }
     } catch (error) {
       console.error("Failed to fetch posts:", error);
-      // Optionally, set an error state to show a message to the user
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchTerm) {
+        fetchPosts(1, searchTerm);
+      } else if (!searchTerm) {
+        fetchPosts(1, '');
+      }
+    }, 500); // 500ms debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, fetchPosts]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -52,8 +65,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on new search
-    fetchPosts(1, e.target.value);
+    setCurrentPage(1);
   };
 
   return (
@@ -115,10 +127,16 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
                                 </Link>
                               </h2>
                               
-                              {post.excerpt && (
-                                <p className="flex-grow mb-4 text-sm text-muted-foreground line-clamp-2">
-                                  {post.excerpt}
-                                </p>
+                              {isContentJustAnImage(post.content) ? (
+                                <div className="flex items-center justify-center flex-grow mb-4 text-muted-foreground">
+                                  <PhotographIcon className="w-10 h-10" />
+                                </div>
+                              ) : (
+                                post.excerpt && (
+                                  <p className="flex-grow mb-4 text-sm text-muted-foreground line-clamp-3">
+                                    {post.excerpt}
+                                  </p>
+                                )
                               )}
                               
                               <div className="flex items-end justify-between mt-auto">

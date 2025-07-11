@@ -9,6 +9,8 @@ import Footer from '../../components/Footer';
 import TableOfContents from '../../components/TableOfContents';
 import RecommendedPosts from '../../components/RecommendedPosts';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
+import ProgressBar from '../../components/ProgressBar';
+import GiscusComments from '../../components/GiscusComments';
 import { CalendarIcon, UserIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon } from '../../components/icons';
 
 export default function PostPage() {
@@ -148,121 +150,122 @@ export default function PostPage() {
       </Head>
 
       <Header showBackButton={true} />
+      <ProgressBar />
 
-      <main className="container px-4 py-8 mx-auto sm:py-12">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-          {/* Sidebar (Table of Contents) - Left on large screens */}
-          <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24">
-              <h3 className="mb-4 text-sm font-semibold uppercase text-muted-foreground">On this page</h3>
-              <TableOfContents content={post.content} />
-            </div>
-          </aside>
-
-          {/* Main Content */}
-          <div className="lg:col-span-6">
-            <article>
-              {/* Article Header */}
-              <header className="mb-8">
-                <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight md:text-4xl text-foreground">
-                  {post.title}
-                </h1>
-                
-                {/* Meta Information */}
-                <div className="flex flex-wrap items-center mb-6 text-sm gap-x-4 gap-y-2 text-muted-foreground">
-                  <div className="flex items-center space-x-2">
-                    <UserIcon className="w-4 h-4" />
-                    <span>{post.author}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CalendarIcon className="w-4 h-4" />
-                    <span>{formatDateTime(post.created_at)}</span>
-                  </div>
-                  {post.updated_at !== post.created_at && (
+      <main className="py-8 sm:py-12">
+        <div className="container mx-auto">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            {/* Main Article Content */}
+            <div className="lg:col-span-8 lg:col-start-2">
+              <article>
+                <header className="mb-8">
+                  <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight md:text-4xl text-foreground">
+                    {post.title}
+                  </h1>
+                  
+                  {/* Meta Information */}
+                  <div className="flex flex-wrap items-center mb-6 text-sm gap-x-4 gap-y-2 text-muted-foreground">
                     <div className="flex items-center space-x-2">
-                      <ClockIcon className="w-4 h-4" />
-                      <span>Updated: {formatDateTime(post.updated_at)}</span>
+                      <UserIcon className="w-4 h-4" />
+                      <span>{post.author}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CalendarIcon className="w-4 h-4" />
+                      <span>{formatDateTime(post.created_at)}</span>
+                    </div>
+                    {post.updated_at !== post.created_at && (
+                      <div className="flex items-center space-x-2">
+                        <ClockIcon className="w-4 h-4" />
+                        <span>Updated: {formatDateTime(post.updated_at)}</span>
+                      </div>
+                    )}
+                  </div>
+                  {isAdmin && (
+                    <div className="flex p-3 my-2 space-x-4 border rounded-md bg-secondary">
+                      <Link
+                        href={`/admin/posts/${post.id}`}
+                        className="text-sm font-medium text-primary hover:underline"
+                      >
+                        Edit Post
+                      </Link>
+                      <button
+                        onClick={async () => {
+                          if (confirm('Are you sure you want to delete this post?')) {
+                            try {
+                              const token = localStorage.getItem('auth_token');
+                              const response = await fetch(`/api/posts/${post.id}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` },
+                              });
+                              const data = await response.json();
+                              if (data.success) {
+                                alert('Post deleted successfully!');
+                                router.push('/admin/posts');
+                              } else {
+                                alert(data.error || 'Failed to delete post.');
+                              }
+                            } catch (error) {
+                              console.error('Error deleting post:', error);
+                              alert('Network error or failed to delete post.');
+                            }
+                          }
+                        }}
+                        className="text-sm font-medium text-destructive hover:underline"
+                      >
+                        Delete Post
+                      </button>
                     </div>
                   )}
+                </header>
+
+                <div id="article-content" className="prose dark:prose-invert max-w-none markdown-content">
+                  <MarkdownRenderer content={post.content} />
                 </div>
-                {isAdmin && (
-                  <div className="flex p-3 mt-4 space-x-4 border rounded-md bg-secondary">
-                    <Link
-                      href={`/admin/posts/${post.id}`}
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
-                      Edit Post
-                    </Link>
-                    <button
-                      onClick={async () => {
-                        if (confirm('Are you sure you want to delete this post?')) {
-                          try {
-                            const token = localStorage.getItem('auth_token');
-                            const response = await fetch(`/api/posts/${post.id}`, {
-                              method: 'DELETE',
-                              headers: { 'Authorization': `Bearer ${token}` },
-                            });
-                            const data = await response.json();
-                            if (data.success) {
-                              alert('Post deleted successfully!');
-                              router.push('/admin/posts');
-                            } else {
-                              alert(data.error || 'Failed to delete post.');
-                            }
-                          } catch (error) {
-                            console.error('Error deleting post:', error);
-                            alert('Network error or failed to delete post.');
-                          }
-                        }
-                      }}
-                      className="text-sm font-medium text-destructive hover:underline"
-                    >
-                      Delete Post
-                    </button>
-                  </div>
-                )}
-              </header>
 
-              {/* Article Content */}
-              <div className="prose dark:prose-invert max-w-none markdown-content">
-                <MarkdownRenderer content={post.content} />
-              </div>
-            </article>
-
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between pt-6 mt-12 border-t">
-              {prevPost ? (
-                <Link
-                  href={`/posts/${prevPost.slug}`}
-                  className="flex items-center font-medium group text-primary"
-                >
-                  <ArrowLeftIcon className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" />
-                  <div className="text-left">
-                    <span className="text-xs text-muted-foreground">Previous</span>
-                    <p className="line-clamp-1">{prevPost.title}</p>
-                  </div>
-                </Link>
-              ) : <div />}
-              {nextPost ? (
-                <Link
-                  href={`/posts/${nextPost.slug}`}
-                  className="flex items-center font-medium text-right group text-primary"
-                >
-                   <div className="text-right">
-                    <span className="text-xs text-muted-foreground">Next</span>
-                    <p className="line-clamp-1">{nextPost.title}</p>
-                  </div>
-                  <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
-                </Link>
-              ) : <div />}
+                <div className="mt-12">
+                  <GiscusComments />
+                </div>
+                
+                {/* Recommended Posts */}
+                <RecommendedPosts posts={recommendedPosts} orientation="horizontal" />
+              </article>
             </div>
 
-            {/* Recommended Posts */}
-            <RecommendedPosts posts={recommendedPosts} orientation="horizontal" />
+            {/* Sidebar */}
+            <aside className="hidden lg:block lg:col-span-3">
+              <div className="sticky top-24">
+                <div className="mb-8">
+                  <h3 className="mb-4 text-sm font-semibold uppercase text-muted-foreground">On this page</h3>
+                  <div className="table-of-contents-small">
+                    <TableOfContents content={post.content} />
+                  </div>
+                </div>
+                <div className="mt-8">
+                  <h3 className="mb-4 text-sm font-semibold uppercase text-muted-foreground">Navigation</h3>
+                  <div className="flex flex-col gap-4">
+                    {prevPost && (
+                      <Link
+                        href={`/posts/${prevPost.slug}`}
+                        className="flex items-center text-sm font-medium text-primary hover:underline"
+                      >
+                        <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                        {prevPost.title}
+                      </Link>
+                    )}
+                    {nextPost && (
+                      <Link
+                        href={`/posts/${nextPost.slug}`}
+                        className="flex items-center text-sm font-medium text-primary hover:underline"
+                      >
+                        <ArrowRightIcon className="w-4 h-4 mr-2" />
+                        {nextPost.title}
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
-
-          {/* Empty right sidebar for spacing */}
-          <div className="hidden lg:block lg:col-span-3" />
         </div>
       </main>
 

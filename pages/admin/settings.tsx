@@ -170,9 +170,9 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <AdminLayout title="Settings">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading settings...</p>
+        <div className="py-12 text-center">
+          <div className="w-12 h-12 mx-auto border-b-2 rounded-full animate-spin border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading settings...</p>
         </div>
       </AdminLayout>
     );
@@ -190,17 +190,17 @@ export default function SettingsPage() {
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* General Settings */}
-            <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="border rounded-lg shadow-sm bg-card border-border">
+              <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
-                  <CogIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">General Settings</h3>
+                  <CogIcon className="w-5 h-5 mr-2 text-muted-foreground" />
+                  <h3 className="text-lg font-medium text-foreground">General Settings</h3>
                 </div>
               </div>
               <div className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label htmlFor="siteName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="siteName" className="block text-sm font-medium text-foreground">
                       Site Name
                     </label>
                     <input
@@ -209,11 +209,11 @@ export default function SettingsPage() {
                       name="siteName"
                       value={settings.siteName}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                     />
                   </div>
                   <div>
-                    <label htmlFor="siteUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="siteUrl" className="block text-sm font-medium text-foreground">
                       Site URL
                     </label>
                     <input
@@ -222,12 +222,12 @@ export default function SettingsPage() {
                       name="siteUrl"
                       value={settings.siteUrl}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                     />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="siteDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="siteDescription" className="block text-sm font-medium text-foreground">
                     Site Description
                   </label>
                   <textarea
@@ -236,11 +236,11 @@ export default function SettingsPage() {
                     rows={3}
                     value={settings.siteDescription}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                   />
                 </div>
                 <div>
-                  <label htmlFor="adminEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="adminEmail" className="block text-sm font-medium text-foreground">
                     Admin Email
                   </label>
                   <input
@@ -249,11 +249,11 @@ export default function SettingsPage() {
                     name="adminEmail"
                     value={settings.adminEmail}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                   />
                 </div>
                 <div>
-                  <label htmlFor="favicon" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="favicon" className="block text-sm font-medium text-foreground">
                     Website Icon (Favicon)
                   </label>
                   <input
@@ -263,9 +263,9 @@ export default function SettingsPage() {
                     placeholder="/favicon.ico"
                     value={settings.favicon}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                   />
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Enter the path to your favicon, e.g.: /favicon.ico or https://example.com/icon.png
                   </p>
                 </div>
@@ -273,16 +273,16 @@ export default function SettingsPage() {
             </div>
 
             {/* SEO Settings */}
-            <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="border rounded-lg shadow-sm bg-card border-border">
+              <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
-                  <GlobeAltIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">SEO Settings</h3>
+                  <GlobeAltIcon className="w-5 h-5 mr-2 text-muted-foreground" />
+                  <h3 className="text-lg font-medium text-foreground">SEO Settings</h3>
                 </div>
               </div>
               <div className="p-6 space-y-6">
                 <div>
-                  <label htmlFor="seo.metaTitle" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="seo.metaTitle" className="block text-sm font-medium text-foreground">
                     Meta Title
                   </label>
                   <input
@@ -291,11 +291,11 @@ export default function SettingsPage() {
                     name="seo.metaTitle"
                     value={settings.seo.metaTitle}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                   />
                 </div>
                 <div>
-                  <label htmlFor="seo.metaDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="seo.metaDescription" className="block text-sm font-medium text-foreground">
                     Meta Description
                   </label>
                   <textarea
@@ -304,11 +304,11 @@ export default function SettingsPage() {
                     rows={3}
                     value={settings.seo.metaDescription}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                   />
                 </div>
                 <div>
-                  <label htmlFor="seo.keywords" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="seo.keywords" className="block text-sm font-medium text-foreground">
                     Keywords (comma separated)
                   </label>
                   <input
@@ -317,24 +317,24 @@ export default function SettingsPage() {
                     name="seo.keywords"
                     value={settings.seo.keywords}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                   />
                 </div>
               </div>
             </div>
 
             {/* Social Links */}
-            <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="border rounded-lg shadow-sm bg-card border-border">
+              <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
-                  <LinkIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">Social Links</h3>
+                  <LinkIcon className="w-5 h-5 mr-2 text-muted-foreground" />
+                  <h3 className="text-lg font-medium text-foreground">Social Links</h3>
                 </div>
               </div>
               <div className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label htmlFor="socialLinks.twitter" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="socialLinks.twitter" className="block text-sm font-medium text-foreground">
                       Twitter
                     </label>
                     <input
@@ -343,11 +343,11 @@ export default function SettingsPage() {
                       name="socialLinks.twitter"
                       value={settings.socialLinks.twitter}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                     />
                   </div>
                   <div>
-                    <label htmlFor="socialLinks.facebook" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="socialLinks.facebook" className="block text-sm font-medium text-foreground">
                       Facebook
                     </label>
                     <input
@@ -356,11 +356,11 @@ export default function SettingsPage() {
                       name="socialLinks.facebook"
                       value={settings.socialLinks.facebook}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                     />
                   </div>
                   <div>
-                    <label htmlFor="socialLinks.instagram" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="socialLinks.instagram" className="block text-sm font-medium text-foreground">
                       Instagram
                     </label>
                     <input
@@ -369,11 +369,11 @@ export default function SettingsPage() {
                       name="socialLinks.instagram"
                       value={settings.socialLinks.instagram}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                     />
                   </div>
                   <div>
-                    <label htmlFor="socialLinks.github" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="socialLinks.github" className="block text-sm font-medium text-foreground">
                       GitHub
                     </label>
                     <input
@@ -382,7 +382,7 @@ export default function SettingsPage() {
                       name="socialLinks.github"
                       value={settings.socialLinks.github}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                     />
                   </div>
                 </div>
@@ -392,13 +392,13 @@ export default function SettingsPage() {
 
             {/* Messages */}
             {error && (
-              <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-md">
+              <div className="px-4 py-3 border rounded-md text-destructive-foreground bg-destructive/10 border-destructive/20">
                 {error}
               </div>
             )}
 
             {successMessage && (
-              <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-md">
+              <div className="px-4 py-3 text-green-700 border rounded-md bg-green-500/10 border-green-500/20">
                 {successMessage}
               </div>
             )}
@@ -408,7 +408,7 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 transition-opacity rounded-md text-primary-foreground bg-primary hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? 'Saving...' : 'Save Settings'}
               </button>

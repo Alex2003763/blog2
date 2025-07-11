@@ -119,9 +119,9 @@ export default function EditPostPage() {
   if (loading) {
     return (
       <AdminLayout title="Edit Post">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        <div className="py-12 text-center">
+          <div className="w-12 h-12 mx-auto border-b-2 rounded-full animate-spin border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </AdminLayout>
     );
@@ -130,11 +130,11 @@ export default function EditPostPage() {
   if (error && !post) {
     return (
       <AdminLayout title="Edit Post">
-        <div className="text-center py-12">
-          <p className="text-red-600 dark:text-red-400">{error}</p>
+        <div className="py-12 text-center">
+          <p className="text-destructive">{error}</p>
           <Link
             href="/admin/posts"
-            className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="inline-block px-4 py-2 mt-4 text-white rounded bg-primary hover:opacity-80"
           >
             Back to Posts
           </Link>
@@ -153,17 +153,17 @@ export default function EditPostPage() {
 
       <AdminLayout title={`Edit: ${post?.title || 'Post'}`}>
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="border rounded-lg shadow-sm bg-card border-border">
             <div className="p-6">
               {error && (
-                <div className="mb-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded">
+                <div className="px-4 py-3 mb-4 border rounded bg-destructive/10 border-destructive/20 text-destructive-foreground">
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="title" className="block text-sm font-medium text-foreground">
                     Post Title
                   </label>
                   <input
@@ -173,16 +173,16 @@ export default function EditPostPage() {
                     required
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                     placeholder="Enter post title"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="content" className="block mb-2 text-sm font-medium text-foreground">
                     Post Content
                   </label>
-                  <div className="border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+                  <div className="overflow-hidden border rounded-md border-border">
                     <MDEditor
                       value={formData.content}
                       onChange={handleContentChange}
@@ -201,24 +201,24 @@ export default function EditPostPage() {
                     name="published"
                     checked={formData.published}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="w-4 h-4 rounded text-primary focus:ring-primary border-border"
                   />
-                  <label htmlFor="published" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                  <label htmlFor="published" className="block ml-2 text-sm text-foreground">
                     Published
                   </label>
                 </div>
 
-                <div className="flex items-center justify-end space-x-4 pt-4">
+                <div className="flex items-center justify-end pt-4 space-x-4">
                   <Link
                     href="/admin/posts"
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
+                    className="px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-accent"
                   >
                     Cancel
                   </Link>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="px-4 py-2 transition-opacity rounded-md bg-primary text-primary-foreground hover:opacity-80 disabled:opacity-50"
                   >
                     {saving ? 'Updating...' : 'Update Post'}
                   </button>

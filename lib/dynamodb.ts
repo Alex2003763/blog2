@@ -141,30 +141,21 @@ export class DynamoDBService {
 
   async searchPosts(query: string, publishedOnly: boolean = true): Promise<BlogPost[]> {
     try {
-      let filterExpression = '';
-      let expressionAttributeValues: { [key: string]: any } = {};
+      const lowerCaseQuery = query.toLowerCase();
+      
+      // First, get all posts (or just published ones)
+      const allPosts = publishedOnly
+        ? await this.getPublishedPosts()
+        : await this.getAllPosts();
 
-      if (publishedOnly) {
-        filterExpression = 'published = :published AND (contains(title, :query) OR contains(content, :query))';
-        expressionAttributeValues = {
-          ':published': true,
-          ':query': query,
-        };
-      } else {
-        filterExpression = 'contains(title, :query) OR contains(content, :query)';
-        expressionAttributeValues = {
-          ':query': query,
-        };
-      }
+      // Then, filter in-memory for a case-insensitive search
+      const filteredPosts = allPosts.filter(post => {
+        const titleMatch = post.title.toLowerCase().includes(lowerCaseQuery);
+        const contentMatch = post.content.toLowerCase().includes(lowerCaseQuery);
+        return titleMatch || contentMatch;
+      });
 
-      const params = {
-        TableName: this.tableName,
-        FilterExpression: filterExpression,
-        ExpressionAttributeValues: expressionAttributeValues,
-      };
-
-      const result = await dynamodb.send(new ScanCommand(params));
-      return (result.Items as BlogPost[]) || [];
+      return filteredPosts;
     } catch (error) {
       console.error('Error searching posts:', error);
       throw error;

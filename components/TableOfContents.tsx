@@ -17,27 +17,44 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
 
   useEffect(() => {
     // Parse headings from content
-    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+    const lines = content.split('\n');
+    let inCodeBlock = false;
     const items: TocItem[] = [];
-    let match;
 
-    while ((match = headingRegex.exec(content)) !== null) {
-      const level = match[1].length;
-      const text = match[2].trim();
-      const id = text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
-      
-      items.push({
-        id,
-        text,
-        level
-      });
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // 檢測程式碼區塊的開始或結束（圍欄式）
+      if (line.startsWith('```') || line.startsWith('~~~')) {
+        inCodeBlock = !inCodeBlock;
+        continue;
+      }
+
+      // 跳過程式碼區塊內的行
+      if (inCodeBlock) {
+        continue;
+      }
+
+      // 使用正則表達式匹配標題
+      const match = line.match(/^(#{1,6})\s+(.+)$/);
+      if (match) {
+        const level = match[1].length;
+        const text = match[2].trim();
+        const id = text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-') + `-${items.length}`;
+        items.push({
+          id,
+          text,
+          level
+        });
+      }
     }
 
     setTocItems(items);
   }, [content]);
 
   useEffect(() => {
-    // Create intersection observer for active section tracking
+    if (tocItems.length === 0) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -48,16 +65,20 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
       },
       {
         rootMargin: '-20% 0px -35% 0px',
-        threshold: 0
+        threshold: 0,
       }
     );
 
-    // Observe all headings
-    const headingElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    headingElements.forEach((el) => observer.observe(el));
+    const articleContent = document.getElementById('article-content');
+    if (articleContent) {
+      const headingElements = articleContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headingElements.forEach((el) => observer.observe(el));
+    }
 
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+    };
+  }, [tocItems]);
 
   const scrollToHeading = (id: string) => {
     const element = document.getElementById(id);

@@ -48,17 +48,17 @@ export default function ConfirmationModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl dark:bg-gray-800">
+              <Dialog.Panel className="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform border shadow-xl bg-card rounded-2xl border-border">
                 <div className="sm:flex sm:items-start">
-                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full dark:bg-red-900/50 sm:mx-0 sm:h-10 sm:w-10">
-                    <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" aria-hidden="true" />
+                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto rounded-full bg-destructive/10 sm:mx-0 sm:h-10 sm:w-10">
+                    <ExclamationTriangleIcon className="w-6 h-6 text-destructive" aria-hidden="true" />
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
+                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-foreground">
                       {title}
                     </Dialog.Title>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-muted-foreground">
                         {message}
                       </p>
                     </div>
@@ -67,7 +67,7 @@ export default function ConfirmationModal({
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                   <button
                     type="button"
-                    className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 sm:ml-3 sm:w-auto sm:text-sm"
+                    className="inline-flex justify-center w-full px-4 py-2 text-base font-medium transition-opacity border border-transparent rounded-md shadow-sm text-destructive-foreground bg-destructive hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2 dark:focus:ring-offset-card sm:ml-3 sm:w-auto sm:text-sm"
                     onClick={() => {
                       onConfirm();
                       onClose();
@@ -77,7 +77,7 @@ export default function ConfirmationModal({
                   </button>
                   <button
                     type="button"
-                    className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-600 sm:mt-0 sm:w-auto sm:text-sm"
+                    className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium transition-colors border rounded-md shadow-sm text-foreground bg-muted border-border hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 dark:focus:ring-offset-card sm:mt-0 sm:w-auto sm:text-sm"
                     onClick={onClose}
                   >
                     {cancelButtonText}

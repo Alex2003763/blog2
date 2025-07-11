@@ -10,6 +10,7 @@ export function slugify(text: string): string {
 export function generateExcerpt(content: string, maxLength: number = 150): string {
   // 移除 markdown 標記
   const plainText = content
+    .replace(/```[\s\S]*?```/g, '') // 移除程式碼區塊
     .replace(/#{1,6}\s+/g, '') // 移除標題標記
     .replace(/\*\*(.*?)\*\*/g, '$1') // 移除粗體標記
     .replace(/\*(.*?)\*/g, '$1') // 移除斜體標記
@@ -23,6 +24,15 @@ export function generateExcerpt(content: string, maxLength: number = 150): strin
   }
 
   return plainText.substring(0, maxLength).trim() + '...';
+}
+
+export function isContentJustAnImage(content: string): boolean {
+  const trimmedContent = content.trim();
+  // 檢查 HTML <img> 標籤
+  const htmlImageRegex = /^<p><img src=".*" alt=".*"><\/p>$/;
+  // 檢查 Markdown 圖片語法
+  const markdownImageRegex = /^!\[.*\]\(.*\)$/;
+  return htmlImageRegex.test(trimmedContent) || markdownImageRegex.test(trimmedContent);
 }
 
 export function formatDate(dateString: string): string {
