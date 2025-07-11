@@ -48,7 +48,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     const result = await remark()
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
-      .use(rehypeHighlight, { subset: false, ignoreMissing: true })
+      .use(rehypeHighlight)
       .use(rehypeStringify)
       .process(markdown);
     return result.toString();
