@@ -15,42 +15,46 @@ export default function PostsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
-  const fetchPosts = useCallback(async (page: number) => {
+  // The source of truth for filters is the URL query.
+  const { q: searchTerm = '', status: statusFilter = 'all', page: pageStr = '1' } = router.query;
+  const currentPage = parseInt(pageStr as string, 10) || 1;
+
+  // We use a local state for the search input to allow the user to type freely
+  // before submitting the search. It syncs with the URL query on page load.
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+  useEffect(() => {
+    setLocalSearchTerm(searchTerm);
+  }, [searchTerm]);
+
+  const fetchPosts = useCallback(async () => {
+    // Don't fetch until the router is ready and has the query params.
+    if (!router.isReady) return;
+
+    setLoading(true);
     try {
-      setLoading(true);
       const token = localStorage.getItem('auth_token');
-      
       const params = new URLSearchParams({
         admin: 'true',
-        page: page.toString(),
-        limit: '6', // Show 6 posts per page
+        page: currentPage.toString(),
+        limit: '6',
       });
 
-      if (searchTerm) {
-        params.append('q', searchTerm);
-      }
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
+      if (searchTerm) params.append('q', searchTerm as string);
+      if (statusFilter !== 'all') params.append('status', statusFilter as string);
 
       const response = await fetch(`/api/posts?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
 
       const data = await response.json();
-      
       if (data.success) {
         setPosts(data.data.posts);
         setTotalPages(data.data.pagination.totalPages);
+        setError(null);
       } else {
         setError(data.error || 'Failed to fetch posts');
       }
@@ -59,26 +63,30 @@ export default function PostsPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, statusFilter]);
+  }, [router.isReady, searchTerm, statusFilter, currentPage]);
 
   useEffect(() => {
-    if (router.isReady) {
-      fetchPosts(currentPage);
-    }
-  }, [router.isReady, currentPage, fetchPosts]);
+    fetchPosts();
+  }, [fetchPosts]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatusFilter(e.target.value as 'all' | 'published' | 'draft');
-    setCurrentPage(1);
+  const updateQuery = (newParams: Record<string, string | number>) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, ...newParams },
+    }, undefined, { shallow: true });
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    updateQuery({ page });
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateQuery({ q: String(localSearchTerm), page: 1 });
+  };
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateQuery({ status: e.target.value, page: 1 });
   };
 
   const handleDeletePost = (postId: string) => {
@@ -92,24 +100,18 @@ export default function PostsPage() {
     const toastId = toast.loading('Deleting post...');
     try {
       const token = localStorage.getItem('auth_token');
-      
       const response = await fetch(`/api/posts/${postToDelete}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
 
       const data = await response.json();
-      
       if (data.success) {
         toast.success('Post deleted successfully', { id: toastId });
-        // If the deleted post was the last one on the current page, go back one page.
         if (posts.length === 1 && currentPage > 1) {
-          setCurrentPage(currentPage - 1);
+          handlePageChange(currentPage - 1);
         } else {
-          // Otherwise, just refetch the current page.
-          fetchPosts(currentPage);
+          fetchPosts();
         }
       } else {
         toast.error(data.error || 'Failed to delete post', { id: toastId });
@@ -128,23 +130,19 @@ export default function PostsPage() {
 
     try {
       const token = localStorage.getItem('auth_token');
-      
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          published: !currentStatus,
-        }),
+        body: JSON.stringify({ published: !currentStatus }),
       });
 
       const data = await response.json();
-      
       if (data.success) {
         toast.success(`Post ${currentStatus ? 'unpublished' : 'published'} successfully`, { id: toastId });
-        fetchPosts(currentPage);
+        fetchPosts();
       } else {
         toast.error(data.error || 'Failed to update post status', { id: toastId });
       }
@@ -171,13 +169,8 @@ export default function PostsPage() {
           confirmButtonText="Delete"
         />
         <div className="space-y-6">
-          {/* Header Actions */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center space-x-4">
-              <h2 className="text-xl font-semibold text-foreground">
-                All Posts
-              </h2>
-            </div>
+            <h2 className="text-xl font-semibold text-foreground">All Posts</h2>
             <Link
               href="/admin/posts/new"
               className="inline-flex items-center px-4 py-2 text-sm font-medium transition-opacity border border-transparent rounded-md shadow-sm text-primary-foreground bg-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
@@ -187,15 +180,9 @@ export default function PostsPage() {
             </Link>
           </div>
 
-          {/* Filters */}
           <div className="p-4 border rounded-lg shadow-sm bg-card border-border">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Search */}
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                setCurrentPage(1);
-                fetchPosts(1);
-              }}>
+              <form onSubmit={handleSearchSubmit}>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground" />
@@ -203,14 +190,13 @@ export default function PostsPage() {
                   <input
                     type="text"
                     placeholder="Search posts..."
-                    value={searchTerm}
-                    onChange={handleSearchChange}
+                    value={localSearchTerm}
+                    onChange={(e) => setLocalSearchTerm(e.target.value)}
                     className="block w-full py-2 pl-10 pr-3 leading-5 border rounded-md bg-background border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   />
                 </div>
               </form>
 
-              {/* Status Filter */}
               <div>
                 <select
                   value={statusFilter}
@@ -225,14 +211,12 @@ export default function PostsPage() {
             </div>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="px-4 py-3 border rounded-md text-destructive-foreground bg-destructive/10 border-destructive/20">
               {error}
             </div>
           )}
 
-          {/* Posts List */}
           {loading ? (
             <div className="p-8 border rounded-lg shadow-sm bg-card border-border">
               <div className="space-y-4 animate-pulse">
@@ -247,12 +231,8 @@ export default function PostsPage() {
             </div>
           ) : posts.length === 0 ? (
             <div className="py-12 text-center">
-              <h3 className="mb-4 text-lg font-medium text-foreground">
-                No posts found
-              </h3>
-              <p className="mb-4 text-muted-foreground">
-                Try adjusting your search or filter criteria.
-              </p>
+              <h3 className="mb-4 text-lg font-medium text-foreground">No posts found</h3>
+              <p className="mb-4 text-muted-foreground">Try adjusting your search or filter criteria.</p>
             </div>
           ) : (
             <>
@@ -261,78 +241,36 @@ export default function PostsPage() {
                   <table className="min-w-full divide-y divide-border">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
-                          Title
-                        </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
-                          Author
-                        </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">
-                          Date
-                        </th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-right uppercase text-muted-foreground">
-                          Actions
-                        </th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Title</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Status</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Author</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Date</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-right uppercase text-muted-foreground">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y bg-card divide-border">
                       {posts.map((post) => (
                         <tr key={post.id} className="hover:bg-muted">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-foreground">
-                              {post.title}
-                            </div>
+                            <div className="text-sm font-medium text-foreground">{post.title}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              post.published
-                                ? 'bg-green-500/10 text-green-500'
-                                : 'bg-muted text-muted-foreground'
-                            }`}>
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.published ? 'bg-green-500/10 text-green-500' : 'bg-muted text-muted-foreground'}`}>
                               {post.published ? 'Published' : 'Draft'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">
-                            {post.author}
-                          </td>
-                          <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">
-                            {formatDateTime(post.updated_at)}
-                          </td>
+                          <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">{post.author}</td>
+                          <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">{formatDateTime(post.updated_at)}</td>
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <div className="flex items-center justify-end space-x-3">
-                              <Link
-                                href={`/admin/posts/${post.id}`}
-                                className="transition-opacity text-primary hover:opacity-80"
-                              >
-                                Edit
-                              </Link>
+                              <Link href={`/admin/posts/${post.id}`} className="transition-opacity text-primary hover:opacity-80">Edit</Link>
                               {post.published && (
-                                <Link
-                                  href={`/posts/${post.slug}`}
-                                  className="transition-colors text-muted-foreground hover:text-foreground"
-                                >
-                                  View
-                                </Link>
+                                <Link href={`/posts/${post.slug}`} className="transition-colors text-muted-foreground hover:text-foreground">View</Link>
                               )}
-                              <button
-                                onClick={() => handleTogglePublish(post.id, post.published)}
-                                className={`${
-                                  post.published
-                                    ? 'text-yellow-500 hover:opacity-80'
-                                    : 'text-green-500 hover:opacity-80'
-                                } transition-opacity`}
-                              >
+                              <button onClick={() => handleTogglePublish(post.id, post.published)} className={`${post.published ? 'text-yellow-500 hover:opacity-80' : 'text-green-500 hover:opacity-80'} transition-opacity`}>
                                 {post.published ? 'Unpublish' : 'Publish'}
                               </button>
-                              <button
-                                onClick={() => handleDeletePost(post.id)}
-                                className="transition-opacity text-destructive hover:opacity-80"
-                              >
-                                Delete
-                              </button>
+                              <button onClick={() => handleDeletePost(post.id)} className="transition-opacity text-destructive hover:opacity-80">Delete</button>
                             </div>
                           </td>
                         </tr>

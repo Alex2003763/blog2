@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { GetStaticProps } from 'next';
 import { BlogPost, dynamoDBService } from '../lib/dynamodb';
 import { formatDate, isContentJustAnImage } from '../lib/utils';
@@ -20,12 +21,19 @@ interface HomeProps {
 }
 
 export default function Home({ featuredPost, recommendedPosts, initialPosts, initialTotalPages }: HomeProps) {
+  const router = useRouter();
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [loading, setLoading] = useState(false);
 
   const fetchPosts = useCallback(async (page: number) => {
+    if (page === 1 && initialPosts.length > 0) {
+      setPosts(initialPosts);
+      setTotalPages(initialTotalPages);
+      return;
+    }
+
     setLoading(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -42,11 +50,18 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [initialPosts, initialTotalPages]);
+
+  useEffect(() => {
+    const pageFromQuery = router.query.page ? parseInt(router.query.page as string) : 1;
+    setCurrentPage(pageFromQuery);
+    if (router.isReady) {
+      fetchPosts(pageFromQuery);
+    }
+  }, [router.isReady, router.query.page, fetchPosts]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    fetchPosts(page);
+    router.push(`/?page=${page}`, undefined, { shallow: true });
   };
 
   return (
@@ -60,13 +75,11 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
 
       <Header showAdminLink={true} />
 
-      <main className="container flex-grow px-4 mx-auto">
+      <main className="container flex-grow px-4 py-8 mx-auto sm:px-6 lg:px-8 lg:py-12">
         {/* Hero Section */}
-        <section className="mb-8 text-center">
-          <div className="mt-8">
-            <div className="w-full max-w-md mx-auto">
-              <SearchInput />
-            </div>
+        <section className="py-8 text-center md:py-12">
+          <div className="w-full max-w-md mx-auto">
+            <SearchInput />
           </div>
         </section>
 
@@ -147,7 +160,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
           </div>
 
           {/* Sidebar */}
-          <aside className="mt-12 lg:col-span-4 lg:mt-0">
+          <aside className="mt-8 lg:col-span-4 lg:mt-0">
             <div className="sticky space-y-6 top-24">
               {featuredPost && (
                 <section>
