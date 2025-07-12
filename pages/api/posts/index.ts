@@ -38,7 +38,7 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
     } else {
       if (q) {
         // If there's a search query, use the efficient searchPosts method
-        allPosts = await dynamoDBService.searchPosts({ query: q as string, status: 'published' });
+        allPosts = await dynamoDBService.searchPosts(q as string);
       } else {
         // Otherwise, fetch all published posts and set cache headers
         res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');

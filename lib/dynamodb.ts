@@ -139,23 +139,36 @@ export class DynamoDBService {
     }
   }
 
-  async searchPosts(query: string, publishedOnly: boolean = true): Promise<BlogPost[]> {
+  async searchPosts(query: string): Promise<BlogPost[]> {
+    const status = 'published';
+    console.log(`Searching for "${query}" with status=${status}`);
+    
     try {
-      const lowerCaseQuery = query.toLowerCase();
+      const filterExpressions = ['(contains(title, :query) OR contains(content, :query))'];
+      const expressionAttributeValues: { [key: string]: any } = {
+        ':query': query,
+      };
+
+      if (status === 'published') {
+        filterExpressions.push('published = :published');
+        expressionAttributeValues[':published'] = true;
+      } else if (status === 'draft') {
+        filterExpressions.push('published = :published');
+        expressionAttributeValues[':published'] = false;
+      }
+      // If status is 'all', we don't add any filter for the 'published' attribute.
+
+      const params = {
+        TableName: this.tableName,
+        FilterExpression: filterExpressions.join(' AND '),
+        ExpressionAttributeValues: expressionAttributeValues,
+      };
       
-      // First, get all posts (or just published ones)
-      const allPosts = publishedOnly
-        ? await this.getPublishedPosts()
-        : await this.getAllPosts();
+      console.log("Search params:", JSON.stringify(params, null, 2));
 
-      // Then, filter in-memory for a case-insensitive search
-      const filteredPosts = allPosts.filter(post => {
-        const titleMatch = post.title.toLowerCase().includes(lowerCaseQuery);
-        const contentMatch = post.content.toLowerCase().includes(lowerCaseQuery);
-        return titleMatch || contentMatch;
-      });
-
-      return filteredPosts;
+      const result = await dynamodb.send(new ScanCommand(params));
+      console.log(`Found ${result.Items?.length || 0} posts from search query.`);
+      return (result.Items as BlogPost[]) || [];
     } catch (error) {
       console.error('Error searching posts:', error);
       throw error;
