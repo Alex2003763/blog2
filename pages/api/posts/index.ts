@@ -36,13 +36,14 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
       if (!authPayload) return;
       allPosts = await dynamoDBService.getAllPosts();
     } else {
-      // This is the fix: Only set cache header if it's NOT a search query.
-      if (!q) {
+      if (q) {
+        // If there's a search query, use the efficient searchPosts method
+        allPosts = await dynamoDBService.searchPosts({ query: q as string, status: 'published' });
+      } else {
+        // Otherwise, fetch all published posts and set cache headers
         res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+        allPosts = await dynamoDBService.getPublishedPosts();
       }
-      // Pass the search query `q` to getPublishedPosts.
-      // The method now handles whether to perform a search or fetch all.
-      allPosts = await dynamoDBService.getPublishedPosts(q as string | undefined);
     }
 
     // 3. Apply status filter for admin context
