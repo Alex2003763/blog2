@@ -5,6 +5,8 @@ module.exports = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/**/*.{js,ts,jsx,tsx,mdx}',
+    './contexts/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -18,17 +20,38 @@ module.exports = {
         '128': '32rem',
       },
       colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
         },
       },
       fontFamily: {
@@ -48,86 +71,45 @@ module.exports = {
         ],
         mono: ['Monaco', 'Menlo', 'Ubuntu Mono', 'monospace'],
       },
-      typography: {
+      typography: ({ theme }) => ({
         DEFAULT: {
           css: {
+            '--tw-prose-body': theme('colors.muted.foreground'),
+            '--tw-prose-headings': theme('colors.foreground'),
+            '--tw-prose-lead': theme('colors.muted.foreground'),
+            '--tw-prose-links': theme('colors.primary.DEFAULT'),
+            '--tw-prose-bold': theme('colors.foreground'),
+            '--tw-prose-counters': theme('colors.muted.foreground'),
+            '--tw-prose-bullets': theme('colors.border'),
+            '--tw-prose-hr': theme('colors.border'),
+            '--tw-prose-quotes': theme('colors.foreground'),
+            '--tw-prose-quote-borders': theme('colors.border'),
+            '--tw-prose-captions': theme('colors.muted.foreground'),
+            '--tw-prose-code': theme('colors.foreground'),
+            '--tw-prose-pre-code': theme('colors.foreground'),
+            '--tw-prose-pre-bg': theme('colors.secondary.DEFAULT'),
+            '--tw-prose-th-borders': theme('colors.border'),
+            '--tw-prose-td-borders': theme('colors.border'),
+            '--tw-prose-invert-body': theme('colors.muted.foreground'),
+            '--tw-prose-invert-headings': theme('colors.foreground'),
+            '--tw-prose-invert-lead': theme('colors.muted.foreground'),
+            '--tw-prose-invert-links': theme('colors.primary.DEFAULT'),
+            '--tw-prose-invert-bold': theme('colors.foreground'),
+            '--tw-prose-invert-counters': theme('colors.muted.foreground'),
+            '--tw-prose-invert-bullets': theme('colors.border'),
+            '--tw-prose-invert-hr': theme('colors.border'),
+            '--tw-prose-invert-quotes': theme('colors.foreground'),
+            '--tw-prose-invert-quote-borders': theme('colors.border'),
+            '--tw-prose-invert-captions': theme('colors.muted.foreground'),
+            '--tw-prose-invert-code': theme('colors.foreground'),
+            '--tw-prose-invert-pre-code': theme('colors.foreground'),
+            '--tw-prose-invert-pre-bg': theme('colors.secondary.DEFAULT'),
+            '--tw-prose-invert-th-borders': theme('colors.border'),
+            '--tw-prose-invert-td-borders': theme('colors.border'),
             maxWidth: 'none',
-            color: '#374151',
-            lineHeight: '1.8',
-            '[class~="lead"]': {
-              color: '#6b7280',
-            },
-            a: {
-              color: '#2563eb',
-              textDecoration: 'underline',
-              '&:hover': {
-                color: '#1d4ed8',
-              },
-            },
-            strong: {
-              color: '#111827',
-              fontWeight: '600',
-            },
-            'h1, h2, h3, h4, h5, h6': {
-              color: '#111827',
-              fontWeight: '600',
-            },
-            h1: {
-              fontSize: '2rem',
-              marginTop: '0',
-              marginBottom: '1rem',
-            },
-            h2: {
-              fontSize: '1.5rem',
-              marginTop: '2rem',
-              marginBottom: '1rem',
-            },
-            h3: {
-              fontSize: '1.25rem',
-              marginTop: '1.5rem',
-              marginBottom: '0.5rem',
-            },
-            code: {
-              color: '#374151',
-              backgroundColor: '#f3f4f6',
-              padding: '0.2rem 0.4rem',
-              borderRadius: '0.25rem',
-              fontSize: '0.875rem',
-            },
-            'code::before': {
-              content: '""',
-            },
-            'code::after': {
-              content: '""',
-            },
-            pre: {
-              backgroundColor: '#1f2937',
-              color: '#f9fafb',
-              padding: '1rem',
-              borderRadius: '0.5rem',
-              overflow: 'auto',
-            },
-            'pre code': {
-              backgroundColor: 'transparent',
-              padding: '0',
-              color: 'inherit',
-            },
-            blockquote: {
-              color: '#6b7280',
-              borderLeftColor: '#d1d5db',
-              borderLeftWidth: '4px',
-              paddingLeft: '1rem',
-              fontStyle: 'italic',
-            },
-            'ul > li': {
-              paddingLeft: '0.5rem',
-            },
-            'ol > li': {
-              paddingLeft: '0.5rem',
-            },
           },
         },
-      },
+      }),
     },
   },
   plugins: [

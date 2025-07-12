@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -20,8 +20,9 @@ export default function PostsPage() {
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
   // The source of truth for filters is the URL query.
-  const { q: searchTerm = '', status: statusFilter = 'all', page: pageStr = '1' } = router.query;
+  const { q: searchTerm = '', status: statusFilter = 'all', page: pageStr = '1', limit: limitStr = '6' } = router.query;
   const currentPage = parseInt(pageStr as string, 10) || 1;
+  const currentLimit = parseInt(limitStr as string, 10) || 6;
 
   // We use a local state for the search input to allow the user to type freely
   // before submitting the search. It syncs with the URL query on page load.
@@ -40,7 +41,7 @@ export default function PostsPage() {
       const params = new URLSearchParams({
         admin: 'true',
         page: currentPage.toString(),
-        limit: '6',
+        limit: currentLimit.toString(),
       });
 
       if (searchTerm) params.append('q', searchTerm as string);
@@ -63,7 +64,7 @@ export default function PostsPage() {
     } finally {
       setLoading(false);
     }
-  }, [router.isReady, searchTerm, statusFilter, currentPage]);
+  }, [router.isReady, searchTerm, statusFilter, currentPage, currentLimit]);
 
   useEffect(() => {
     fetchPosts();
@@ -87,6 +88,10 @@ export default function PostsPage() {
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateQuery({ status: e.target.value, page: 1 });
+  };
+
+  const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateQuery({ limit: e.target.value, page: 1 });
   };
 
   const handleDeletePost = (postId: string) => {
@@ -181,7 +186,7 @@ export default function PostsPage() {
           </div>
 
           <div className="p-4 border rounded-lg shadow-sm bg-card border-border">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <form onSubmit={handleSearchSubmit}>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -208,7 +213,18 @@ export default function PostsPage() {
                   <option value="draft">Draft</option>
                 </select>
               </div>
-            </div>
+             <div>
+               <select
+                 value={currentLimit}
+                 onChange={handleLimitChange}
+                 className="block w-full px-3 py-2 leading-5 border rounded-md bg-background border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+               >
+                 <option value="6">6 per page</option>
+                 <option value="10">10 per page</option>
+                 <option value="20">20 per page</option>
+               </select>
+             </div>
+           </div>
           </div>
 
           {error && (

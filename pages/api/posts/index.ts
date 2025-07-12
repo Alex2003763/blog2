@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { dynamoDBService } from '../../../lib/dynamodb';
+import { dynamoDBService, BlogPost } from '../../../lib/dynamodb';
 import { AuthService } from '../../../lib/auth';
 import { createApiResponse } from '../../../lib/utils';
 
@@ -28,22 +28,22 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
     const currentPage = parseInt(page as string, 10);
     const postsPerPage = parseInt(limit as string, 10);
 
-    let allPosts;
+    let allPosts: BlogPost[];
 
-    // 1. Fetch initial set of posts based on admin/public context
+    // 1. Fetch initial set of posts
     if (admin === 'true') {
       const authPayload = await AuthService.requireAuth(req, res);
       if (!authPayload) return;
       allPosts = await dynamoDBService.getAllPosts();
     } else {
-      // Only cache the response if it's not a search query
+      // This is the fix: Only set cache header if it's NOT a search query.
       if (!q) {
         res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
       }
       allPosts = await dynamoDBService.getPublishedPosts();
     }
 
-    // 2. Apply search filter (case-insensitive) if a query is provided
+    // 2. Apply search filter (if q is present)
     if (q) {
       const lowerCaseQuery = (q as string).toLowerCase();
       allPosts = allPosts.filter(post =>
@@ -61,7 +61,7 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
       }
     }
 
-    // 4. Sort and Paginate the final list
+    // 4. Sort and Paginate
     allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     const totalPosts = allPosts.length;
@@ -87,9 +87,8 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
 
 async function handleCreatePost(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Only admins can create posts
     const authPayload = await AuthService.requireAuth(req, res);
-    if (!authPayload) return; // Auth failed, requireAuth handled the response
+    if (!authPayload) return;
 
     const { title, content, published = false } = req.body;
 

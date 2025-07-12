@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   DocumentTextIcon, 
   EyeIcon, 
@@ -84,7 +84,7 @@ export default function DashboardStats() {
         }
       } else {
         // Fallback to posts API if stats API doesn't exist
-        const postsResponse = await fetch('/api/posts?admin=true', {
+        const postsResponse = await fetch('/api/posts?admin=true&limit=-1', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
