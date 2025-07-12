@@ -39,7 +39,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
 
     try {
       const url = `/api/posts?page=${page}&limit=6`;
-      const response = await fetch(url);
+      const response = await fetch(url, { cache: 'no-store' });
       const data = await response.json();
       if (data.success) {
         setPosts(data.data.posts);

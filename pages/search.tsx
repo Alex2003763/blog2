@@ -41,7 +41,7 @@ export default function SearchPage() {
 
     try {
       const url = `/api/posts?page=${page}&limit=10&q=${encodeURIComponent(query)}`;
-      const response = await fetch(url);
+      const response = await fetch(url, { cache: 'no-store' });
       const data = await response.json();
       if (data.success) {
         setPosts(data.data.posts);
