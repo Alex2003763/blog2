@@ -20,6 +20,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
+  console.log('--- handleGetPosts: Start ---');
+  console.log('Received query:', req.query);
+
   try {
     const { admin, page = '1', limit = '6', q, status } = req.query;
     const currentPage = parseInt(page as string, 10);
@@ -27,8 +30,10 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
 
     let allPosts;
     if (q) {
+      console.log(`Searching posts with term: "${q}"`);
       // If a search query is provided, use the searchPosts method
       allPosts = await dynamoDBService.searchPosts(q as string, admin !== 'true');
+      console.log(`Found ${allPosts.length} posts after search.`);
     } else if (admin === 'true') {
       const authPayload = await AuthService.requireAuth(req, res);
       if (!authPayload) return;
@@ -63,7 +68,7 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json(createApiResponse(true, responseData));
   } catch (error) {
-    console.error('Get posts error:', error);
+    console.error('Error in handleGetPosts:', error);
     return res.status(500).json(createApiResponse(false, null, 'Failed to fetch posts'));
   }
 }
