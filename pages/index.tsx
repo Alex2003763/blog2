@@ -25,12 +25,12 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const fetchPosts = useCallback(async (page: number, query: string = '') => {
+  const fetchPosts = useCallback(async (page: number) => {
     setLoading(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      const url = `/api/posts?page=${page}&limit=6${query ? `&q=${encodeURIComponent(query)}` : ''}`;
+      const url = `/api/posts?page=${page}&limit=6${searchTerm ? `&q=${encodeURIComponent(searchTerm)}` : ''}`;
       const response = await fetch(url);
       const data = await response.json();
       if (data.success) {
@@ -42,18 +42,18 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [searchTerm]);
 
 
   useEffect(() => {
     if (searchTerm === '') {
-      fetchPosts(1, '');
+      fetchPosts(1);
     }
   }, [searchTerm, fetchPosts]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchPosts(page, searchTerm);
+    fetchPosts(page);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +63,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchPosts(1, searchTerm);
+    fetchPosts(1);
   };
 
   return (
