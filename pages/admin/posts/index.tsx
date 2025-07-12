@@ -62,14 +62,20 @@ export default function PostsPage() {
   }, [searchTerm, statusFilter]);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      fetchPosts(1);
-    }, 500); // 500ms debounce
+    fetchPosts(currentPage);
+  }, [currentPage, fetchPosts]);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm, statusFilter, fetchPosts]);
+  useEffect(() => {
+    if (router.isReady) {
+      fetchPosts(1);
+    }
+  }, [statusFilter, router.isReady]);
+
+  useEffect(() => {
+    if (searchTerm === '') {
+      fetchPosts(1);
+    }
+  }, [searchTerm, fetchPosts]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -186,21 +192,24 @@ export default function PostsPage() {
           <div className="p-4 border rounded-lg shadow-sm bg-card border-border">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* Search */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground" />
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                setCurrentPage(1);
+                fetchPosts(1);
+              }}>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search posts..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="block w-full py-2 pl-10 pr-3 leading-5 border rounded-md bg-background border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  />
                 </div>
-                <input
-                  type="text"
-                  placeholder="Search posts..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="block w-full py-2 pl-10 pr-3 leading-5 border rounded-md bg-background border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                />
-              </div>
+              </form>
 
               {/* Status Filter */}
               <div>

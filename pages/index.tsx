@@ -44,18 +44,11 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
     }
   }, []);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (searchTerm) {
-        fetchPosts(1, searchTerm);
-      } else if (!searchTerm) {
-        fetchPosts(1, '');
-      }
-    }, 500); // 500ms debounce
 
-    return () => {
-      clearTimeout(handler);
-    };
+  useEffect(() => {
+    if (searchTerm === '') {
+      fetchPosts(1, '');
+    }
   }, [searchTerm, fetchPosts]);
 
   const handlePageChange = (page: number) => {
@@ -63,9 +56,14 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
     fetchPosts(page, searchTerm);
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setCurrentPage(1);
+    fetchPosts(1, searchTerm);
   };
 
   return (
@@ -83,13 +81,22 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
         {/* Hero Section */}
         <section className="mb-8 text-center">
           <div className="mt-8">
-            <input
-              type="text"
-              placeholder="Search posts..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="w-full max-w-md px-4 py-2 border rounded-md bg-secondary focus:outline-none focus:ring-2 focus:ring-ring"
-            />
+            <form onSubmit={handleSearchSubmit} className="w-full max-w-md mx-auto">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search posts..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="w-full px-4 py-2 pr-10 border rounded-md bg-secondary focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <button type="submit" className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground" aria-label="Search">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-4 h-4" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                  </svg>
+                </button>
+              </div>
+            </form>
           </div>
         </section>
 
