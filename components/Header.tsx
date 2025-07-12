@@ -8,6 +8,7 @@ interface HeaderProps {
   showBackButton?: boolean;
   backHref?: string;
   backText?: string;
+  onBackClick?: () => void;
   showAdminLink?: boolean;
 }
 
@@ -15,6 +16,7 @@ export default function Header({
   showBackButton = false,
   backHref = '/',
   backText = 'Back to Home',
+  onBackClick,
   showAdminLink = false
 }: HeaderProps) {
   const { theme, setTheme } = useTheme();
@@ -44,13 +46,25 @@ export default function Header({
         {/* Navigation Section */}
         <nav className="flex items-center space-x-2">
           {showBackButton && (
-            <Link
-              href={backHref}
-              className="flex items-center px-3 py-2 space-x-2 text-sm font-medium transition-colors rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-            >
-              <HomeIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">{backText}</span>
-            </Link>
+            <>
+              {onBackClick ? (
+                <button
+                  onClick={onBackClick}
+                  className="flex items-center px-3 py-2 space-x-2 text-sm font-medium transition-colors rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+                >
+                  <HomeIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{backText}</span>
+                </button>
+              ) : (
+                <Link
+                  href={backHref}
+                  className="flex items-center px-3 py-2 space-x-2 text-sm font-medium transition-colors rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+                >
+                  <HomeIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{backText}</span>
+                </Link>
+              )}
+            </>
           )}
 
           {showAdminLink && (

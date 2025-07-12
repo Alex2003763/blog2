@@ -29,12 +29,9 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
     const postsPerPage = parseInt(limit as string, 10);
 
     let allPosts;
-    if (q) {
-      console.log(`Searching posts with term: "${q}"`);
-      // If a search query is provided, use the searchPosts method
-      allPosts = await dynamoDBService.searchPosts(q as string, admin !== 'true');
-      console.log(`Found ${allPosts.length} posts after search.`);
-    } else if (admin === 'true') {
+
+    // 1. Fetch initial set of posts based on admin/public context
+    if (admin === 'true') {
       const authPayload = await AuthService.requireAuth(req, res);
       if (!authPayload) return;
       allPosts = await dynamoDBService.getAllPosts();
@@ -43,13 +40,25 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
       allPosts = await dynamoDBService.getPublishedPosts();
     }
 
-    // Filter by status if provided
-    if (status === 'published') {
-      allPosts = allPosts.filter(post => post.published);
-    } else if (status === 'draft') {
-      allPosts = allPosts.filter(post => !post.published);
+    // 2. Apply search filter (case-insensitive) if a query is provided
+    if (q) {
+      const lowerCaseQuery = (q as string).toLowerCase();
+      allPosts = allPosts.filter(post =>
+        post.title.toLowerCase().includes(lowerCaseQuery) ||
+        post.content.toLowerCase().includes(lowerCaseQuery)
+      );
     }
 
+    // 3. Apply status filter for admin context
+    if (admin === 'true') {
+      if (status === 'published') {
+        allPosts = allPosts.filter(post => post.published);
+      } else if (status === 'draft') {
+        allPosts = allPosts.filter(post => !post.published);
+      }
+    }
+
+    // 4. Sort and Paginate the final list
     allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     const totalPosts = allPosts.length;

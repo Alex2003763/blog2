@@ -62,24 +62,23 @@ export default function PostsPage() {
   }, [searchTerm, statusFilter]);
 
   useEffect(() => {
-    fetchPosts(currentPage);
-  }, [currentPage, fetchPosts]);
-
-  useEffect(() => {
     if (router.isReady) {
-      fetchPosts(1);
+      fetchPosts(currentPage);
     }
-  }, [statusFilter, router.isReady]);
+  }, [router.isReady, currentPage, fetchPosts]);
 
-  useEffect(() => {
-    if (searchTerm === '') {
-      fetchPosts(1);
-    }
-  }, [searchTerm, fetchPosts]);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatusFilter(e.target.value as 'all' | 'published' | 'draft');
+    setCurrentPage(1);
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchPosts(page);
   };
 
   const handleDeletePost = (postId: string) => {
@@ -205,7 +204,7 @@ export default function PostsPage() {
                     type="text"
                     placeholder="Search posts..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={handleSearchChange}
                     className="block w-full py-2 pl-10 pr-3 leading-5 border rounded-md bg-background border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   />
                 </div>
@@ -215,7 +214,7 @@ export default function PostsPage() {
               <div>
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as 'all' | 'published' | 'draft')}
+                  onChange={handleStatusChange}
                   className="block w-full px-3 py-2 leading-5 border rounded-md bg-background border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   <option value="all">All Status</option>

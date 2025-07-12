@@ -9,6 +9,7 @@ import Footer from '../components/Footer';
 import Pagination from '../components/Pagination';
 import FeaturedPost from '../components/FeaturedPost';
 import RecommendedPosts from '../components/RecommendedPosts';
+import SearchInput from '../components/SearchInput';
 import { CalendarIcon, UserIcon, ArrowRightIcon, PhotographIcon } from '../components/icons';
 
 interface HomeProps {
@@ -23,14 +24,13 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchPosts = useCallback(async (page: number) => {
     setLoading(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      const url = `/api/posts?page=${page}&limit=6${searchTerm ? `&q=${encodeURIComponent(searchTerm)}` : ''}`;
+      const url = `/api/posts?page=${page}&limit=6`;
       const response = await fetch(url);
       const data = await response.json();
       if (data.success) {
@@ -42,28 +42,11 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
     } finally {
       setLoading(false);
     }
-  }, [searchTerm]);
-
-
-  useEffect(() => {
-    if (searchTerm === '') {
-      fetchPosts(1);
-    }
-  }, [searchTerm, fetchPosts]);
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     fetchPosts(page);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-    fetchPosts(1);
   };
 
   return (
@@ -81,22 +64,9 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
         {/* Hero Section */}
         <section className="mb-8 text-center">
           <div className="mt-8">
-            <form onSubmit={handleSearchSubmit} className="w-full max-w-md mx-auto">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search posts..."
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  className="w-full px-4 py-2 pr-10 border rounded-md bg-secondary focus:outline-none focus:ring-2 focus:ring-ring"
-                />
-                <button type="submit" className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground" aria-label="Search">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-4 h-4" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                  </svg>
-                </button>
-              </div>
-            </form>
+            <div className="w-full max-w-md mx-auto">
+              <SearchInput />
+            </div>
           </div>
         </section>
 
