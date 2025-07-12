@@ -36,7 +36,10 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
       if (!authPayload) return;
       allPosts = await dynamoDBService.getAllPosts();
     } else {
-      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+      // Only cache the response if it's not a search query
+      if (!q) {
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+      }
       allPosts = await dynamoDBService.getPublishedPosts();
     }
 
