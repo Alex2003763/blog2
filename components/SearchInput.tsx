@@ -25,7 +25,7 @@ export default function SearchInput({ initialValue = '' }: SearchInputProps) {
           placeholder="Search posts..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 pr-10 border rounded-md bg-secondary focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full px-3 py-1 pr-10 border rounded-md bg-secondary focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <button type="submit" className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground" aria-label="Search">
           <MagnifyingGlassIcon className="w-5 h-5" />

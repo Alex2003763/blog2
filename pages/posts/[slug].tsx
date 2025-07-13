@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { BlogPost } from '../../lib/dynamodb';
+import { useRouter } from 'next/router';
+import { BlogPost, dynamoDBService } from '../../lib/dynamodb';
+import { SettingsService, SiteSettings } from '../../lib/settings';
 import { formatDateTime } from '../../lib/utils';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -12,106 +14,40 @@ import MarkdownRenderer from '../../components/MarkdownRenderer';
 import ProgressBar from '../../components/ProgressBar';
 import GiscusComments from '../../components/GiscusComments';
 import { CalendarIcon, UserIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon } from '../../components/icons';
-import { usePosts } from '../../lib/PostContext';
 
-export default function PostPage() {
+interface PostPageProps {
+  post: BlogPost;
+  siteSettings: SiteSettings;
+  recommendedPosts: BlogPost[];
+  prevPost: { slug: string; title: string } | null;
+  nextPost: { slug: string; title: string } | null;
+}
+
+const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPosts, prevPost, nextPost }) => {
   const router = useRouter();
-  const { slug } = router.query;
-  const { getPostBySlug, loading: postsLoading, posts } = usePosts();
-
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [recommendedPosts, setRecommendedPosts] = useState<BlogPost[]>([]);
-  const [prevPost, setPrevPost] = useState<{ slug: string; title: string } | null>(null);
-  const [nextPost, setNextPost] = useState<{ slug: string; title: string } | null>(null);
 
   useEffect(() => {
-    const fetchPostData = async (slug: string) => {
-      setLoading(true);
-      const postFromContext = getPostBySlug(slug);
-
-      if (postFromContext) {
-        setPost(postFromContext);
-        setLoading(false);
-      } else {
-        // If not in context (e.g., direct navigation), fetch from API
-        await fetchPost(slug);
+    // Admin check is client-side as it requires localStorage
+    const checkAdminStatus = async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return;
+        const response = await fetch('/api/auth/check-admin', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (data.success) {
+          setIsAdmin(data.data.isAdmin);
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
       }
-      
-      fetchRecommendedPosts(slug);
-      fetchNavigation(slug);
-      checkAdminStatus();
     };
+    checkAdminStatus();
+  }, []);
 
-    if (slug && typeof slug === 'string' && !postsLoading) {
-      fetchPostData(slug);
-    }
-  }, [slug, postsLoading, getPostBySlug]);
-
-  const fetchNavigation = async (currentSlug: string) => {
-    try {
-      const response = await fetch(`/api/posts/navigation?currentSlug=${currentSlug}`);
-      const data = await response.json();
-      if (data.success) {
-        setPrevPost(data.data.prevPost);
-        setNextPost(data.data.nextPost);
-      } else {
-        console.error('Failed to fetch navigation:', data.error);
-      }
-    } catch (error) {
-      console.error('Network error fetching navigation:', error);
-    }
-  };
-
-  const fetchRecommendedPosts = (currentSlug: string) => {
-    if (posts.length > 0) {
-      const filtered = posts
-        .filter((p: BlogPost) => p.slug !== currentSlug && p.published)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3);
-      setRecommendedPosts(filtered);
-    }
-  };
-
-  const fetchPost = async (slug: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/posts/slug/${slug}`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setPost(data.data);
-      } else {
-        setError(data.error || 'Failed to fetch post');
-      }
-    } catch (err) {
-      setError('Network error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkAdminStatus = async () => {
-    try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
-      const response = await fetch('/api/auth/check-admin', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      if (data.success) {
-        setIsAdmin(data.data.isAdmin);
-      }
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-    }
-  };
-
-  if (loading || postsLoading) {
+  if (router.isFallback) {
     return (
       <div className="min-h-screen bg-background">
         <Header showBackButton={true} />
@@ -126,34 +62,29 @@ export default function PostPage() {
     );
   }
 
-  if (error || !post) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header showBackButton={true} />
-        <div className="container px-4 py-16 mx-auto">
-          <div className="text-center">
-            <div className="max-w-md mx-auto">
-              <p className="mb-6 text-destructive">{error || 'Post not found'}</p>
-              <Link
-                href="/"
-                className="inline-block px-6 py-3 font-medium text-white transition-colors rounded-lg bg-primary hover:bg-primary/90"
-              >
-                Back to Home
-              </Link>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const pageUrl = `${siteSettings.siteUrl}/posts/${post.slug}`;
+  const ogImage = post.coverImage || `${siteSettings.siteUrl}/og-default.png`; // Assume a default OG image
 
   return (
     <div className="min-h-screen bg-background">
       <Head>
-        <title>{post.title} - Blog Platform</title>
+        <title>{`${post.title} | ${siteSettings.siteName}`}</title>
         <meta name="description" content={post.excerpt || post.title} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt || ''} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:site_name" content={siteSettings.siteName} />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt || ''} />
+        <meta name="twitter:image" content={ogImage} />
       </Head>
 
       <Header showBackButton={true} />
@@ -170,7 +101,6 @@ export default function PostPage() {
                     {post.title}
                   </h1>
                   
-                  {/* Meta Information */}
                   <div className="flex flex-wrap items-center mb-6 text-sm gap-x-4 gap-y-2 text-muted-foreground">
                     <div className="flex items-center space-x-2">
                       <UserIcon className="w-4 h-4" />
@@ -233,7 +163,6 @@ export default function PostPage() {
                   <GiscusComments />
                 </div>
                 
-                {/* Recommended Posts */}
                 <RecommendedPosts posts={recommendedPosts} orientation="horizontal" />
               </article>
             </div>
@@ -279,4 +208,57 @@ export default function PostPage() {
       <Footer />
     </div>
   );
-}
+};
+
+export default PostPage;
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await dynamoDBService.getAllPosts({ status: 'published' });
+  const paths = posts.map((post) => ({
+    params: { slug: post.slug },
+  }));
+
+  return { paths, fallback: true };
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const slug = context.params?.slug as string;
+
+  if (!slug) {
+    return { notFound: true };
+  }
+
+  const post = await dynamoDBService.getPostBySlug(slug);
+
+  if (!post || !post.published) {
+    return { notFound: true };
+  }
+
+  const siteSettings = await SettingsService.getSiteSettings();
+  const allPosts = await dynamoDBService.getAllPosts({ status: 'published' });
+
+  // Recommended Posts
+  const recommendedPosts = allPosts
+    .filter((p) => p.slug !== slug)
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3);
+
+  // Navigation
+  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+  const prevPostData = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+  const nextPostData = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+
+  const prevPost = prevPostData ? { slug: prevPostData.slug, title: prevPostData.title } : null;
+  const nextPost = nextPostData ? { slug: nextPostData.slug, title: nextPostData.title } : null;
+
+  return {
+    props: {
+      post,
+      siteSettings,
+      recommendedPosts,
+      prevPost,
+      nextPost,
+    },
+    revalidate: 60, // Re-generate the page every 60 seconds
+  };
+};

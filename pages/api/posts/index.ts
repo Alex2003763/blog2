@@ -44,7 +44,13 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
     if (admin === 'true') {
       const authPayload = await AuthService.requireAuth(req, res);
       if (!authPayload) return;
-      allPosts = await dynamoDBService.getAllPosts();
+      
+      const statusFilter = (status as string) === 'all' ? 'all' : (status as 'published' | 'draft');
+      
+      allPosts = await dynamoDBService.getAllPosts({
+        status: statusFilter,
+        searchTerm: q as string | undefined,
+      });
     } else {
       if (q) {
         // If there's a search query, use the efficient searchPosts method
@@ -53,24 +59,6 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
         // Otherwise, fetch all published posts and set cache headers
         res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
         allPosts = await dynamoDBService.getPublishedPosts();
-      }
-    }
-
-    // 2. Apply search filter for admin context if 'q' exists
-    if (admin === 'true' && q) {
-      const searchTerm = (q as string).toLowerCase();
-      allPosts = allPosts.filter(post =>
-        post.title.toLowerCase().includes(searchTerm) ||
-        post.content.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    // 3. Apply status filter for admin context
-    if (admin === 'true') {
-      if (status === 'published') {
-        allPosts = allPosts.filter(post => post.published);
-      } else if (status === 'draft') {
-        allPosts = allPosts.filter(post => !post.published);
       }
     }
 

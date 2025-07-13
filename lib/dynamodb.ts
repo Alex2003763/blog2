@@ -35,6 +35,7 @@ export interface BlogPost {
   slug: string;
   content: string;
   excerpt?: string;
+  coverImage?: string;
   author: string;
   created_at: string;
   updated_at: string;
@@ -52,16 +53,61 @@ export class DynamoDBService {
     this.tableName = process.env.DYNAMODB_TABLE_NAME;
   }
 
-  async getAllPosts(): Promise<BlogPost[]> {
-    try {
-      const params = {
-        TableName: this.tableName,
-      };
+  async getAllPosts(options?: {
+    status?: 'published' | 'draft' | 'all';
+    searchTerm?: string;
+  }): Promise<BlogPost[]> {
+    const { status = 'all', searchTerm } = options || {};
 
-      const result = await dynamodb.send(new ScanCommand(params));
-      return (result.Items as BlogPost[]) || [];
+    const filterExpressions: string[] = [];
+    const expressionAttributeValues: { [key:string]: any } = {};
+    const expressionAttributeNames: { [key:string]: any } = {};
+
+    if (status === 'published') {
+      filterExpressions.push('published = :published');
+      expressionAttributeValues[':published'] = true;
+    } else if (status === 'draft') {
+      filterExpressions.push('published = :published');
+      expressionAttributeValues[':published'] = false;
+    }
+
+    if (searchTerm) {
+      filterExpressions.push('(contains(#title, :searchTerm) OR contains(#content, :searchTerm))');
+      expressionAttributeValues[':searchTerm'] = searchTerm.toLowerCase();
+      expressionAttributeNames['#title'] = 'title';
+      expressionAttributeNames['#content'] = 'content';
+    }
+
+    const params: any = {
+      TableName: this.tableName,
+    };
+
+    if (filterExpressions.length > 0) {
+      params.FilterExpression = filterExpressions.join(' AND ');
+      params.ExpressionAttributeValues = expressionAttributeValues;
+    }
+    
+    if (Object.keys(expressionAttributeNames).length > 0) {
+        params.ExpressionAttributeNames = expressionAttributeNames;
+    }
+
+    try {
+      // Handle DynamoDB's 1MB scan limit with pagination
+      let allItems: BlogPost[] = [];
+      let lastEvaluatedKey: Record<string, any> | undefined = undefined;
+
+      do {
+        const scanParams: any = { ...params, ExclusiveStartKey: lastEvaluatedKey };
+        const result: any = await dynamodb.send(new ScanCommand(scanParams));
+        if (result.Items) {
+          allItems = allItems.concat(result.Items as BlogPost[]);
+        }
+        lastEvaluatedKey = result.LastEvaluatedKey;
+      } while (lastEvaluatedKey);
+
+      return allItems;
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error('Error fetching all posts with filters:', error);
       throw error;
     }
   }
@@ -140,35 +186,14 @@ export class DynamoDBService {
   }
 
   async searchPosts(query: string): Promise<BlogPost[]> {
-    const status = 'published';
-    console.log(`Searching for "${query}" with status=${status}`);
-    
+    console.log(`Searching for published posts with query: "${query}"`);
     try {
-      const filterExpressions = ['(contains(title, :query) OR contains(content, :query))'];
-      const expressionAttributeValues: { [key: string]: any } = {
-        ':query': query,
-      };
-
-      if (status === 'published') {
-        filterExpressions.push('published = :published');
-        expressionAttributeValues[':published'] = true;
-      } else if (status === 'draft') {
-        filterExpressions.push('published = :published');
-        expressionAttributeValues[':published'] = false;
-      }
-      // If status is 'all', we don't add any filter for the 'published' attribute.
-
-      const params = {
-        TableName: this.tableName,
-        FilterExpression: filterExpressions.join(' AND '),
-        ExpressionAttributeValues: expressionAttributeValues,
-      };
-      
-      console.log("Search params:", JSON.stringify(params, null, 2));
-
-      const result = await dynamodb.send(new ScanCommand(params));
-      console.log(`Found ${result.Items?.length || 0} posts from search query.`);
-      return (result.Items as BlogPost[]) || [];
+      // For public search, we only search published posts.
+      // This reuses the more powerful getAllPosts method.
+      return await this.getAllPosts({
+        status: 'published',
+        searchTerm: query,
+      });
     } catch (error) {
       console.error('Error searching posts:', error);
       throw error;
@@ -231,6 +256,38 @@ export class DynamoDBService {
       return (result.Attributes as BlogPost) || null;
     } catch (error) {
       console.error('Error updating post:', error);
+      throw error;
+    }
+  }
+
+  async getAllPostsForSitemap(): Promise<{ slug: string; updated_at: string }[]> {
+    console.log("Fetching all published posts for sitemap from table:", this.tableName);
+    try {
+      const params = {
+        TableName: this.tableName,
+        FilterExpression: 'published = :published',
+        ExpressionAttributeValues: {
+          ':published': true,
+        },
+        ProjectionExpression: 'slug, updated_at',
+      };
+      
+      let allItems: { slug: string; updated_at: string }[] = [];
+      let lastEvaluatedKey: Record<string, any> | undefined = undefined;
+
+      do {
+        const scanParams: any = { ...params, ExclusiveStartKey: lastEvaluatedKey };
+        const result: any = await dynamodb.send(new ScanCommand(scanParams));
+        if (result.Items) {
+          allItems = allItems.concat(result.Items as { slug: string; updated_at: string }[]);
+        }
+        lastEvaluatedKey = result.LastEvaluatedKey;
+      } while (lastEvaluatedKey);
+
+      console.log(`Found ${allItems.length} posts for sitemap.`);
+      return allItems;
+    } catch (error: any) {
+      console.error('Error fetching posts for sitemap:', error);
       throw error;
     }
   }
