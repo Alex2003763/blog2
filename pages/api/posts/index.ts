@@ -24,7 +24,17 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
   console.log('Received query:', req.query);
 
   try {
-    const { admin, page = '1', limit = '6', q, status } = req.query;
+    const { admin, page = '1', limit = '6', q, status, fetchAll } = req.query;
+
+    // Handle request to fetch all posts for local search
+    if (fetchAll === 'true') {
+      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+      const allPublishedPosts = await dynamoDBService.getPublishedPosts();
+      allPublishedPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      // We send all posts without pagination info
+      return res.status(200).json(createApiResponse(true, { posts: allPublishedPosts }));
+    }
+
     const currentPage = parseInt(page as string, 10);
     const postsPerPage = parseInt(limit as string, 10);
 
@@ -44,6 +54,15 @@ async function handleGetPosts(req: NextApiRequest, res: NextApiResponse) {
         res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
         allPosts = await dynamoDBService.getPublishedPosts();
       }
+    }
+
+    // 2. Apply search filter for admin context if 'q' exists
+    if (admin === 'true' && q) {
+      const searchTerm = (q as string).toLowerCase();
+      allPosts = allPosts.filter(post =>
+        post.title.toLowerCase().includes(searchTerm) ||
+        post.content.toLowerCase().includes(searchTerm)
+      );
     }
 
     // 3. Apply status filter for admin context

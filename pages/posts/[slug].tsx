@@ -12,10 +12,13 @@ import MarkdownRenderer from '../../components/MarkdownRenderer';
 import ProgressBar from '../../components/ProgressBar';
 import GiscusComments from '../../components/GiscusComments';
 import { CalendarIcon, UserIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon } from '../../components/icons';
+import { usePosts } from '../../contexts/PostContext';
 
 export default function PostPage() {
   const router = useRouter();
   const { slug } = router.query;
+  const { getPostBySlug, loading: postsLoading, posts } = usePosts();
+
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,18 +28,27 @@ export default function PostPage() {
   const [nextPost, setNextPost] = useState<{ slug: string; title: string } | null>(null);
 
   useEffect(() => {
-    if (slug && typeof slug === 'string') {
-      fetchPost(slug);
-      fetchRecommendedPosts(slug);
-      checkAdminStatus();
-    }
-  }, [slug]);
+    const fetchPostData = async (slug: string) => {
+      setLoading(true);
+      const postFromContext = getPostBySlug(slug);
 
-  useEffect(() => {
-    if (slug && typeof slug === 'string') {
+      if (postFromContext) {
+        setPost(postFromContext);
+        setLoading(false);
+      } else {
+        // If not in context (e.g., direct navigation), fetch from API
+        await fetchPost(slug);
+      }
+      
+      fetchRecommendedPosts(slug);
       fetchNavigation(slug);
+      checkAdminStatus();
+    };
+
+    if (slug && typeof slug === 'string' && !postsLoading) {
+      fetchPostData(slug);
     }
-  }, [slug]);
+  }, [slug, postsLoading, getPostBySlug]);
 
   const fetchNavigation = async (currentSlug: string) => {
     try {
@@ -53,19 +65,13 @@ export default function PostPage() {
     }
   };
 
-  const fetchRecommendedPosts = async (currentSlug: string) => {
-    try {
-      const response = await fetch('/api/posts');
-      const data = await response.json();
-      if (data.success) {
-        const filtered = data.data.posts
-          .filter((p: BlogPost) => p.slug !== currentSlug)
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 3);
-        setRecommendedPosts(filtered);
-      }
-    } catch (error) {
-      console.error('Failed to fetch recommended posts:', error);
+  const fetchRecommendedPosts = (currentSlug: string) => {
+    if (posts.length > 0) {
+      const filtered = posts
+        .filter((p: BlogPost) => p.slug !== currentSlug && p.published)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+      setRecommendedPosts(filtered);
     }
   };
 
@@ -90,6 +96,7 @@ export default function PostPage() {
   const checkAdminStatus = async () => {
     try {
       const token = localStorage.getItem('auth_token');
+      if (!token) return;
       const response = await fetch('/api/auth/check-admin', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -104,14 +111,14 @@ export default function PostPage() {
     }
   };
 
-  if (loading) {
+  if (loading || postsLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header showBackButton={true} />
         <div className="container px-4 py-16 mx-auto">
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto border-b-2 border-blue-600 rounded-full animate-spin"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading post...</p>
+            <div className="w-12 h-12 mx-auto border-b-2 rounded-full border-primary animate-spin"></div>
+            <p className="mt-4 text-muted-foreground">Loading post...</p>
           </div>
         </div>
         <Footer />
@@ -121,15 +128,15 @@ export default function PostPage() {
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header showBackButton={true} />
         <div className="container px-4 py-16 mx-auto">
           <div className="text-center">
             <div className="max-w-md mx-auto">
-              <p className="mb-6 text-red-600 dark:text-red-400">{error || 'Post not found'}</p>
+              <p className="mb-6 text-destructive">{error || 'Post not found'}</p>
               <Link
                 href="/"
-                className="inline-block px-6 py-3 font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+                className="inline-block px-6 py-3 font-medium text-white transition-colors rounded-lg bg-primary hover:bg-primary/90"
               >
                 Back to Home
               </Link>

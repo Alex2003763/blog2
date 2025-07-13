@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -9,60 +9,38 @@ import Footer from '../components/Footer';
 import Pagination from '../components/Pagination';
 import SearchInput from '../components/SearchInput';
 import { CalendarIcon, UserIcon, ArrowRightIcon, PhotographIcon } from '../components/icons';
+import { usePosts } from '../contexts/PostContext';
 
 export default function SearchPage() {
   const router = useRouter();
   const { q } = router.query;
 
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const { searchPosts, loading: postsLoading } = usePosts();
+  const [searchResults, setSearchResults] = useState<BlogPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalPosts, setTotalPosts] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [postsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (typeof q === 'string') {
       setSearchTerm(q);
+      const results = searchPosts(q);
+      setSearchResults(results);
+      setCurrentPage(1); 
+    } else {
+      setSearchResults([]);
     }
-  }, [q]);
+  }, [q, searchPosts]);
 
-  const fetchPosts = useCallback(async (page: number, query: string) => {
-    if (!query) {
-      setLoading(false);
-      setPosts([]);
-      setTotalPages(0);
-      setTotalPosts(0);
-      return;
-    }
-
-    setLoading(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    try {
-      const url = `/api/posts?page=${page}&limit=10&q=${encodeURIComponent(query)}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      if (data.success) {
-        setPosts(data.data.posts);
-        setTotalPages(data.data.pagination.totalPages);
-        setTotalPosts(data.data.pagination.totalPosts);
-      }
-    } catch (error) {
-      console.error("Failed to fetch posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (router.isReady) {
-      fetchPosts(currentPage, searchTerm);
-    }
-  }, [router.isReady, currentPage, searchTerm, fetchPosts]);
+  const totalPosts = searchResults.length;
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = searchResults.slice(indexOfFirstPost, indexOfLastPost);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -83,9 +61,9 @@ export default function SearchPage() {
             <SearchInput initialValue={searchTerm} />
           </div>
 
-          {loading ? (
+          {postsLoading ? (
             <div className="text-center">
-              <p>Loading...</p>
+              <p>Loading posts...</p>
             </div>
           ) : (
             <>
@@ -97,9 +75,9 @@ export default function SearchPage() {
                 )}
               </div>
 
-              {posts.length > 0 && (
+              {currentPosts.length > 0 && (
                 <div className="space-y-8">
-                  {posts.map((post) => (
+                  {currentPosts.map((post) => (
                     <article key={post.id} className="p-6 transition-shadow border rounded-lg bg-card hover:shadow-md">
                       <h2 className="mb-2 text-2xl font-semibold text-foreground hover:text-primary">
                         <Link href={`/posts/${post.slug}`}>

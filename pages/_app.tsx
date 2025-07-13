@@ -3,6 +3,7 @@ import { ThemeProvider } from 'next-themes';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
 import { SettingsProvider, useSettings } from '../contexts/SettingsContext';
+import { PostProvider } from '../contexts/PostContext';
 import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
 
@@ -29,7 +30,9 @@ function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class">
       <SettingsProvider>
-        {children}
+        <PostProvider>
+          {children}
+        </PostProvider>
       </SettingsProvider>
     </ThemeProvider>
   );
