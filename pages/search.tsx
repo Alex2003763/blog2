@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import Pagination from '../components/Pagination';
 import SearchInput from '../components/SearchInput';
 import { CalendarIcon, UserIcon, ArrowRightIcon, PhotographIcon } from '../components/icons';
-import { usePosts } from '../contexts/PostContext';
+import { usePosts } from '../lib/PostContext';
 
 export default function SearchPage() {
   const router = useRouter();

@@ -3,7 +3,7 @@ import { ThemeProvider } from 'next-themes';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
 import { SettingsProvider, useSettings } from '../contexts/SettingsContext';
-import { PostProvider } from '../contexts/PostContext';
+import { PostProvider } from '../lib/PostContext';
 import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
 
@@ -25,14 +25,23 @@ function AppHead() {
   );
 }
 
+import { useRouter } from 'next/router';
+
 // A new wrapper component for all providers.
 function Providers({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const isAdminPage = router.pathname.startsWith('/admin');
+
   return (
     <ThemeProvider attribute="class">
       <SettingsProvider>
-        <PostProvider>
-          {children}
-        </PostProvider>
+        {isAdminPage ? (
+          children
+        ) : (
+          <PostProvider>
+            {children}
+          </PostProvider>
+        )}
       </SettingsProvider>
     </ThemeProvider>
   );

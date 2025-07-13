@@ -12,7 +12,7 @@ import MarkdownRenderer from '../../components/MarkdownRenderer';
 import ProgressBar from '../../components/ProgressBar';
 import GiscusComments from '../../components/GiscusComments';
 import { CalendarIcon, UserIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon } from '../../components/icons';
-import { usePosts } from '../../contexts/PostContext';
+import { usePosts } from '../../lib/PostContext';
 
 export default function PostPage() {
   const router = useRouter();
