@@ -3,6 +3,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import { BlogPost, dynamoDBService } from '../../lib/dynamodb';
 import { SettingsService, SiteSettings } from '../../lib/settings';
 import { formatDateTime } from '../../lib/utils';
@@ -10,10 +11,16 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import TableOfContents from '../../components/TableOfContents';
 import RecommendedPosts from '../../components/RecommendedPosts';
-import MarkdownRenderer from '../../components/MarkdownRenderer';
 import ProgressBar from '../../components/ProgressBar';
 import GiscusComments from '../../components/GiscusComments';
 import { CalendarIcon, UserIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon } from '../../components/icons';
+
+// Dynamically import MarkdownRenderer to ensure it's only loaded on the client-side.
+// This prevents server-side rendering errors from the mermaid library.
+const MarkdownRenderer = dynamic(() => import('../../components/MarkdownRenderer'), {
+  ssr: false,
+  loading: () => <div className="py-8 text-center">Loading content...</div>,
+});
 
 interface PostPageProps {
   post: BlogPost;
