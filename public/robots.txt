@@ -10,4 +10,4 @@ Disallow: /admin/
 Disallow: /api/
 
 # Sitemap 位置
-Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: https://bblog.usefultools.dpdns.org/sitemap.xml
