@@ -6,9 +6,19 @@ import { SettingsProvider, useSettings } from '../contexts/SettingsContext';
 import { PostProvider } from '../lib/PostContext';
 import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
+import { useRouter } from 'next/router';
 
 const inter = Inter({ subsets: ['latin'] });
+
+// Declare the dataLayer array globally
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 function gtag(){window.dataLayer.push(arguments);}
+
 // This component now fetches settings and updates the document head.
 function AppHead() {
   const { siteSettings, loading } = useSettings();
@@ -22,17 +32,18 @@ function AppHead() {
       <meta name="description" content={siteSettings.siteDescription} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-7VBGFMRMR9"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){window.dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-7VBGFMRMR9');
-      </script>
+      <script dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7VBGFMRMR9');
+          `,
+        }} />
     </Head>
   );
 }
 
-import { useRouter } from 'next/router';
 
 // A new wrapper component for all providers.
 function Providers({ children }: { children: React.ReactNode }) {
