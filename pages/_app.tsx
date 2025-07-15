@@ -8,7 +8,7 @@ import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
-
+function gtag(){window.dataLayer.push(arguments);}
 // This component now fetches settings and updates the document head.
 function AppHead() {
   const { siteSettings, loading } = useSettings();
@@ -24,9 +24,8 @@ function AppHead() {
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-7VBGFMRMR9"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag(){window.dataLayer.push(arguments);}
         gtag('js', new Date());
-      
         gtag('config', 'G-7VBGFMRMR9');
       </script>
     </Head>
