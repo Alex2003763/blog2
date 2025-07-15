@@ -21,6 +21,15 @@ function AppHead() {
       <link rel="icon" href={siteSettings.favicon || '/favicon.ico'} />
       <meta name="description" content={siteSettings.siteDescription} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-7VBGFMRMR9"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+      
+        gtag('config', 'G-7VBGFMRMR9');
+      </script>
     </Head>
   );
 }
