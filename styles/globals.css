@@ -498,3 +498,62 @@ a:hover {
 .text-dynamic-3xl {
   font-size: calc(var(--base-font-size) * 1.875);
 }
+/* --- Minimal and Targeted Google Translate Styles --- */
+
+/* 1. Positioning & Alignment */
+#google_translate_element > .skiptranslate {
+  display: inline-block;
+  top: -2px;
+  position: relative;
+}
+
+/* 2. Hide Google's Icon and remove default background/border */
+.goog-te-gadget-simple {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+img.goog-te-gadget-icon {
+  display: none !important;
+}
+
+/* 3. Style the dropdown text to match the theme */
+.goog-te-gadget-simple .goog-te-menu-value {
+  color: hsl(var(--muted-foreground)) !important; /* Match theme color */
+  font-weight: 500;
+  padding: 0.5rem 0.25rem !important;
+  text-decoration: none;
+  cursor: pointer;
+}
+.goog-te-gadget-simple:hover .goog-te-menu-value {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* 4. Filter the language list */
+.goog-te-menu2-item:not([data-language-code="zh-TW"]):not([data-language-code="zh-CN"]):not([data-language-code="en"]):not([data-language-code="zh-HK"]) {
+  display: none !important;
+}
+
+/* 5. Style the dropdown menu itself */
+.goog-te-menu-frame {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  border-radius: 0.375rem !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+.goog-te-menu2 {
+  background: hsl(var(--background)) !important;
+  border: none !important;
+}
+.goog-te-menu2-item:hover {
+  background-color: hsl(var(--muted)) !important;
+}
+.goog-te-menu2-item-selected {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* Hide the Google Translate toolbar that appears at the top of the page */
+body > #goog-gt-tt {
+  display: none !important;
+}

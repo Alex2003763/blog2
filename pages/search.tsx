@@ -69,9 +69,9 @@ export default function SearchPage() {
             <>
               <div className="mb-6 text-sm text-muted-foreground">
                 {totalPosts > 0 ? (
-                  <p>Found {totalPosts} results for "{searchTerm}".</p>
+                  <p>Found {totalPosts} results for &quot;{searchTerm}&quot;.</p>
                 ) : (
-                  <p>No results found for "{searchTerm}". Try another search.</p>
+                  <p>No results found for &quot;{searchTerm}&quot;. Try another search.</p>
                 )}
               </div>
 

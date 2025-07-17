@@ -1,8 +1,15 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import Image from 'next/image';
+import dynamic from 'next/dynamic'; // Import dynamic
 import { SunIcon, MoonIcon, HomeIcon, BookOpenIcon } from './icons';
 import { useSettings } from '../contexts/SettingsContext';
+
+const GoogleTranslateWidget = dynamic(
+  () => import('./GoogleTranslateWidget').then(mod => mod.GoogleTranslateWidget),
+  { ssr: false }
+);
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -32,7 +39,7 @@ export default function Header({
               {loading ? (
                 <BookOpenIcon className="w-5 h-5" />
               ) : (
-                <img src={siteSettings.favicon} alt="Favicon" className="w-5 h-5" />
+                <Image src={siteSettings.favicon} alt="Favicon" className="w-5 h-5" width={20} height={20} />
               )}
             </div>
             <div className="min-w-0">
@@ -76,6 +83,10 @@ export default function Header({
               <span className="sm:hidden">Admin</span>
             </Link>
           )}
+
+          <div className="flex items-center mr-2">
+            <GoogleTranslateWidget />
+          </div>
 
           {/* Theme Toggle */}
           <button
