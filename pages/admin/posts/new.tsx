@@ -52,10 +52,10 @@ export default function NewPostPage() {
       if (data.success) {
         router.push('/admin/posts');
       } else {
-        setError(data.error || 'Failed to create post');
+        setError(data.error || '建立文章失敗');
       }
     } catch (err) {
-      setError('Network error');
+      setError('網路錯誤');
     } finally {
       setLoading(false);
     }
@@ -79,12 +79,12 @@ export default function NewPostPage() {
   return (
     <>
       <Head>
-        <title>New Post - Admin</title>
-        <meta name="description" content="Create a new post" />
+        <title>新增文章 - 管理後台</title>
+        <meta name="description" content="建立一篇新文章" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <AdminLayout title="Create New Post">
+      <AdminLayout title="建立新文章">
         <div className="max-w-4xl mx-auto">
           <div className="border rounded-lg shadow-sm bg-card border-border">
             <div className="p-6">
@@ -97,7 +97,7 @@ export default function NewPostPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="title" className="block text-sm font-medium text-foreground">
-                    Post Title
+                    文章標題
                   </label>
                   <input
                     type="text"
@@ -107,13 +107,13 @@ export default function NewPostPage() {
                     value={formData.title}
                     onChange={handleInputChange}
                     className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
-                    placeholder="Enter post title"
+                    placeholder="請輸入文章標題"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="content" className="block mb-2 text-sm font-medium text-foreground">
-                    Post Content
+                    文章內容
                   </label>
                   <div className="overflow-hidden border rounded-md border-border">
                     <MDEditor
@@ -137,7 +137,7 @@ export default function NewPostPage() {
                     className="w-4 h-4 rounded text-primary focus:ring-primary border-border"
                   />
                   <label htmlFor="published" className="block ml-2 text-sm text-foreground">
-                    Publish immediately
+                    立即發佈
                   </label>
                 </div>
 
@@ -146,14 +146,14 @@ export default function NewPostPage() {
                     href="/admin/posts"
                     className="px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-accent"
                   >
-                    Cancel
+                    取消
                   </Link>
                   <button
                     type="submit"
                     disabled={loading}
                     className="px-4 py-2 transition-opacity rounded-md bg-primary text-primary-foreground hover:opacity-80 disabled:opacity-50"
                   >
-                    {loading ? 'Creating...' : 'Create Post'}
+                    {loading ? '建立中...' : '建立文章'}
                   </button>
                 </div>
               </form>

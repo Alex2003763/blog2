@@ -42,26 +42,26 @@ function QuickAction({ title, description, href, icon: Icon }: QuickActionProps)
 export default function QuickActions() {
   const actions = [
     {
-      title: 'Create New Post',
-      description: 'Write and publish a new blog post',
+      title: '建立新文章',
+      description: '撰寫並發佈一篇新的部落格文章',
       href: '/admin/posts/new',
       icon: PlusIcon,
     },
     {
-      title: 'Manage Posts',
-      description: 'Edit, publish, or delete existing posts',
+      title: '管理文章',
+      description: '編輯、發佈或刪除現有文章',
       href: '/admin/posts',
       icon: DocumentTextIcon,
     },
     {
-      title: 'Customize Appearance',
-      description: 'Modify themes, colors, and layout settings',
+      title: '自訂外觀',
+      description: '修改主題、顏色和版面配置設定',
       href: '/admin/appearance',
       icon: PaintBrushIcon,
     },
     {
-      title: 'Site Settings',
-      description: 'Configure general website settings',
+      title: '網站設定',
+      description: '配置一般網站設定',
       href: '/admin/settings',
       icon: CogIcon,
     }
@@ -70,7 +70,7 @@ export default function QuickActions() {
   return (
     <div className="border rounded-lg shadow-sm bg-card border-border">
       <div className="px-6 py-4 border-b border-border">
-        <h3 className="text-lg font-medium text-foreground">Quick Actions</h3>
+        <h3 className="text-lg font-medium text-foreground">快速操作</h3>
       </div>
       <div className="p-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

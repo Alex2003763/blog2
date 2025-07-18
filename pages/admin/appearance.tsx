@@ -114,7 +114,7 @@ export default function AppearancePage() {
       const data = await response.json();
 
       if (data.success) {
-        setSuccessMessage('Appearance settings updated successfully!');
+        setSuccessMessage('外觀設定已成功更新！');
         setTimeout(() => setSuccessMessage(null), 3000);
         
         // Apply theme change immediately
@@ -122,10 +122,10 @@ export default function AppearancePage() {
           setTheme(settings.theme);
         }
       } else {
-        setError(data.error || 'Failed to update appearance settings');
+        setError(data.error || '更新外觀設定失敗');
       }
     } catch (err) {
-      setError('Network error');
+      setError('網路錯誤');
     } finally {
       setSaving(false);
     }
@@ -154,10 +154,10 @@ export default function AppearancePage() {
 
   if (loading) {
     return (
-      <AdminLayout title="Appearance">
+      <AdminLayout title="外觀">
         <div className="py-12 text-center">
           <div className="w-12 h-12 mx-auto border-b-2 rounded-full border-primary animate-spin"></div>
-          <p className="mt-4 text-muted-foreground">Loading appearance settings...</p>
+          <p className="mt-4 text-muted-foreground">正在載入外觀設定...</p>
         </div>
       </AdminLayout>
     );
@@ -166,12 +166,12 @@ export default function AppearancePage() {
   return (
     <>
       <Head>
-        <title>Appearance - Admin</title>
-        <meta name="description" content="Customize site appearance" />
+        <title>外觀 - 管理後台</title>
+        <meta name="description" content="自訂網站外觀" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <AdminLayout title="Appearance">
+      <AdminLayout title="外觀">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Theme Settings */}
@@ -179,13 +179,13 @@ export default function AppearancePage() {
               <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
                   <SunIcon className="w-5 h-5 mr-2 text-muted-foreground" />
-                  <h3 className="text-lg font-medium text-foreground">Theme Settings</h3>
+                  <h3 className="text-lg font-medium text-foreground">主題設定</h3>
                 </div>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
                   <label className="block text-sm font-medium text-foreground">
-                    Color Theme
+                    色彩主題
                   </label>
                   <div className="grid grid-cols-3 gap-4">
                     <button
@@ -198,7 +198,7 @@ export default function AppearancePage() {
                       }`}
                     >
                       <SunIcon className="w-6 h-6 text-yellow-500" />
-                      <span className="text-sm font-medium text-foreground">Light</span>
+                      <span className="text-sm font-medium text-foreground">淺色</span>
                     </button>
                     <button
                       type="button"
@@ -210,7 +210,7 @@ export default function AppearancePage() {
                       }`}
                     >
                       <MoonIcon className="w-6 h-6 text-primary" />
-                      <span className="text-sm font-medium text-foreground">Dark</span>
+                      <span className="text-sm font-medium text-foreground">深色</span>
                     </button>
                     <button
                       type="button"
@@ -222,7 +222,7 @@ export default function AppearancePage() {
                       }`}
                     >
                       <ComputerDesktopIcon className="w-6 h-6 text-muted-foreground" />
-                      <span className="text-sm font-medium text-foreground">System</span>
+                      <span className="text-sm font-medium text-foreground">系統</span>
                     </button>
                   </div>
                 </div>
@@ -234,14 +234,14 @@ export default function AppearancePage() {
               <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
                   <PaintBrushIcon className="w-5 h-5 mr-2 text-muted-foreground" />
-                  <h3 className="text-lg font-medium text-foreground">Typography</h3>
+                  <h3 className="text-lg font-medium text-foreground">字體排印</h3>
                 </div>
               </div>
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <label htmlFor="fontFamily" className="block text-sm font-medium text-foreground">
-                      Font Family
+                      字體
                     </label>
                     <select
                       id="fontFamily"
@@ -259,7 +259,7 @@ export default function AppearancePage() {
                   </div>
                   <div>
                     <label htmlFor="fontSize" className="block text-sm font-medium text-foreground">
-                      Font Size
+                      字體大小
                     </label>
                     <select
                       id="fontSize"
@@ -268,9 +268,9 @@ export default function AppearancePage() {
                       onChange={handleInputChange}
                       className="block w-full px-3 py-2 mt-1 rounded-md shadow-sm bg-background border-border text-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                     >
-                      <option value="small">Small</option>
-                      <option value="medium">Medium</option>
-                      <option value="large">Large</option>
+                      <option value="small">小</option>
+                      <option value="medium">中</option>
+                      <option value="large">大</option>
                     </select>
                   </div>
                 </div>
@@ -280,7 +280,7 @@ export default function AppearancePage() {
             {/* Custom CSS */}
             <div className="border rounded-lg shadow-sm bg-card border-border">
               <div className="px-6 py-4 border-b border-border">
-                <h3 className="text-lg font-medium text-foreground">Custom CSS</h3>
+                <h3 className="text-lg font-medium text-foreground">自訂 CSS</h3>
               </div>
               <div className="p-6">
                 <textarea
@@ -288,7 +288,7 @@ export default function AppearancePage() {
                   rows={10}
                   value={settings.customCSS}
                   onChange={handleInputChange}
-                  placeholder="Add your custom CSS here..."
+                  placeholder="在此處新增您的自訂 CSS..."
                   className="block w-full px-3 py-2 font-mono rounded-md shadow-sm bg-background border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                 />
               </div>
@@ -314,7 +314,7 @@ export default function AppearancePage() {
                 disabled={saving}
                 className="px-6 py-2 transition-opacity rounded-md text-primary-foreground bg-primary hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {saving ? 'Saving...' : 'Save Appearance'}
+                {saving ? '儲存中...' : '儲存外觀'}
               </button>
             </div>
           </form>

@@ -52,6 +52,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="flex items-center px-3 py-2 text-sm font-medium border rounded-md text-foreground bg-card hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed dark:text-white"
+        aria-label="Previous Page"
       >
         <ArrowLeftIcon className="w-4 h-4 sm:mr-1" />
         <span className="hidden sm:inline">Previous</span>
@@ -84,6 +85,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="flex items-center px-3 py-2 text-sm font-medium border rounded-md text-foreground bg-card hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed dark:text-white"
+        aria-label="Next Page"
       >
         <span className="hidden sm:inline">Next</span>
         <ArrowRightIcon className="w-4 h-4 sm:ml-1" />

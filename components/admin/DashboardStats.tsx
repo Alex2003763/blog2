@@ -136,17 +136,17 @@ export default function DashboardStats() {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       <StatCard
-        title="Total Posts"
+        title="總文章數"
         value={stats.totalPosts}
         icon={DocumentTextIcon}
       />
       <StatCard
-        title="Published Posts"
+        title="已發佈文章"
         value={stats.publishedPosts}
         icon={EyeIcon}
       />
       <StatCard
-        title="Draft Posts"
+        title="草稿文章"
         value={stats.draftPosts}
         icon={CalendarIcon}
       />

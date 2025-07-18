@@ -57,10 +57,10 @@ export default function PostsPage() {
         setTotalPages(data.data.pagination.totalPages);
         setError(null);
       } else {
-        setError(data.error || 'Failed to fetch posts');
+        setError(data.error || '讀取文章失敗');
       }
     } catch (err) {
-      setError('Network error');
+      setError('網路錯誤');
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ export default function PostsPage() {
   const confirmDeletePost = async () => {
     if (!postToDelete) return;
 
-    const toastId = toast.loading('Deleting post...');
+    const toastId = toast.loading('刪除文章中...');
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/posts/${postToDelete}`, {
@@ -112,17 +112,17 @@ export default function PostsPage() {
 
       const data = await response.json();
       if (data.success) {
-        toast.success('Post deleted successfully', { id: toastId });
+        toast.success('文章刪除成功', { id: toastId });
         if (posts.length === 1 && currentPage > 1) {
           handlePageChange(currentPage - 1);
         } else {
           fetchPosts();
         }
       } else {
-        toast.error(data.error || 'Failed to delete post', { id: toastId });
+        toast.error(data.error || '刪除文章失敗', { id: toastId });
       }
     } catch (err) {
-      toast.error('Network error. Please try again.', { id: toastId });
+      toast.error('網路錯誤，請再試一次。', { id: toastId });
     } finally {
       setPostToDelete(null);
       setIsModalOpen(false);
@@ -130,8 +130,8 @@ export default function PostsPage() {
   };
 
   const handleTogglePublish = async (postId: string, currentStatus: boolean) => {
-    const action = currentStatus ? 'Unpublishing' : 'Publishing';
-    const toastId = toast.loading(`${action} post...`);
+    const action = currentStatus ? '取消發佈' : '發佈';
+    const toastId = toast.loading(`${action}文章中...`);
 
     try {
       const token = localStorage.getItem('auth_token');
@@ -146,42 +146,42 @@ export default function PostsPage() {
 
       const data = await response.json();
       if (data.success) {
-        toast.success(`Post ${currentStatus ? 'unpublished' : 'published'} successfully`, { id: toastId });
+        toast.success(`文章 ${currentStatus ? '已取消發佈' : '已發佈'}`, { id: toastId });
         fetchPosts();
       } else {
-        toast.error(data.error || 'Failed to update post status', { id: toastId });
+        toast.error(data.error || '更新文章狀態失敗', { id: toastId });
       }
     } catch (err) {
-      toast.error('Network error. Please try again.', { id: toastId });
+      toast.error('網路錯誤，請再試一次。', { id: toastId });
     }
   };
 
   return (
     <>
       <Head>
-        <title>Posts Management - Admin</title>
-        <meta name="description" content="Manage blog posts" />
+        <title>文章管理 - 管理後台</title>
+        <meta name="description" content="管理部落格文章" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <AdminLayout title="Posts Management">
+      <AdminLayout title="文章管理">
         <ConfirmationModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onConfirm={confirmDeletePost}
-          title="Delete Post"
-          message="Are you sure you want to delete this post? This action cannot be undone."
-          confirmButtonText="Delete"
+          title="刪除文章"
+          message="您確定要刪除這篇文章嗎？此操作無法復原。"
+          confirmButtonText="刪除"
         />
         <div className="space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-xl font-semibold text-foreground">All Posts</h2>
+            <h2 className="text-xl font-semibold text-foreground">所有文章</h2>
             <Link
               href="/admin/posts/new"
               className="inline-flex items-center px-4 py-2 text-sm font-medium transition-opacity border border-transparent rounded-md shadow-sm text-primary-foreground bg-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               <PlusIcon className="w-4 h-4 mr-2" />
-              New Post
+              新增文章
             </Link>
           </div>
 
@@ -194,7 +194,7 @@ export default function PostsPage() {
                   </div>
                   <input
                     type="text"
-                    placeholder="Search posts..."
+                    placeholder="搜尋文章..."
                     value={localSearchTerm}
                     onChange={(e) => setLocalSearchTerm(e.target.value)}
                     className="block w-full py-2 pl-10 pr-3 leading-5 border rounded-md bg-background border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
@@ -208,9 +208,9 @@ export default function PostsPage() {
                   onChange={handleStatusChange}
                   className="block w-full px-3 py-2 leading-5 border rounded-md bg-background border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
-                  <option value="all">All Status</option>
-                  <option value="published">Published</option>
-                  <option value="draft">Draft</option>
+                  <option value="all">所有狀態</option>
+                  <option value="published">已發佈</option>
+                  <option value="draft">草稿</option>
                 </select>
               </div>
              <div>
@@ -219,9 +219,9 @@ export default function PostsPage() {
                  onChange={handleLimitChange}
                  className="block w-full px-3 py-2 leading-5 border rounded-md bg-background border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                >
-                 <option value="6">6 per page</option>
-                 <option value="10">10 per page</option>
-                 <option value="20">20 per page</option>
+                 <option value="6">每頁 6 筆</option>
+                 <option value="10">每頁 10 筆</option>
+                 <option value="20">每頁 20 筆</option>
                </select>
              </div>
            </div>
@@ -247,8 +247,8 @@ export default function PostsPage() {
             </div>
           ) : posts.length === 0 ? (
             <div className="py-12 text-center">
-              <h3 className="mb-4 text-lg font-medium text-foreground">No posts found</h3>
-              <p className="mb-4 text-muted-foreground">Try adjusting your search or filter criteria.</p>
+              <h3 className="mb-4 text-lg font-medium text-foreground">找不到文章</h3>
+              <p className="mb-4 text-muted-foreground">請嘗試調整您的搜尋或篩選條件。</p>
             </div>
           ) : (
             <>
@@ -257,11 +257,11 @@ export default function PostsPage() {
                   <table className="min-w-full divide-y divide-border">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Title</th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Status</th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Author</th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">Date</th>
-                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-right uppercase text-muted-foreground">Actions</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">標題</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">狀態</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">作者</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">日期</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-right uppercase text-muted-foreground">操作</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y bg-card divide-border">
@@ -272,21 +272,21 @@ export default function PostsPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.published ? 'bg-green-500/10 text-green-500' : 'bg-muted text-muted-foreground'}`}>
-                              {post.published ? 'Published' : 'Draft'}
+                              {post.published ? '已發佈' : '草稿'}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">{post.author}</td>
                           <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">{formatDateTime(post.updated_at)}</td>
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <div className="flex items-center justify-end space-x-3">
-                              <Link href={`/admin/posts/${post.id}`} className="transition-opacity text-primary hover:opacity-80">Edit</Link>
+                              <Link href={`/admin/posts/${post.id}`} className="transition-opacity text-primary hover:opacity-80">編輯</Link>
                               {post.published && (
-                                <Link href={`/posts/${post.slug}`} className="transition-colors text-muted-foreground hover:text-foreground">View</Link>
+                                <Link href={`/posts/${post.slug}`} className="transition-colors text-muted-foreground hover:text-foreground">檢視</Link>
                               )}
                               <button onClick={() => handleTogglePublish(post.id, post.published)} className={`${post.published ? 'text-yellow-500 hover:opacity-80' : 'text-green-500 hover:opacity-80'} transition-opacity`}>
-                                {post.published ? 'Unpublish' : 'Publish'}
+                                {post.published ? '取消發佈' : '發佈'}
                               </button>
-                              <button onClick={() => handleDeletePost(post.id)} className="transition-opacity text-destructive hover:opacity-80">Delete</button>
+                              <button onClick={() => handleDeletePost(post.id)} className="transition-opacity text-destructive hover:opacity-80">刪除</button>
                             </div>
                           </td>
                         </tr>

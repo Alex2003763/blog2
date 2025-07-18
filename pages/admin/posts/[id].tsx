@@ -61,10 +61,10 @@ export default function EditPostPage() {
           published: data.data.published,
         });
       } else {
-        setError(data.error || 'Failed to fetch post');
+        setError(data.error || '讀取文章失敗');
       }
     } catch (err) {
-      setError('Network error');
+      setError('網路錯誤');
     } finally {
       setLoading(false);
     }
@@ -92,10 +92,10 @@ export default function EditPostPage() {
       if (data.success) {
         router.push('/admin/posts');
       } else {
-        setError(data.error || 'Failed to update post');
+        setError(data.error || '更新文章失敗');
       }
     } catch (err) {
-      setError('Network error');
+      setError('網路錯誤');
     } finally {
       setSaving(false);
     }
@@ -118,10 +118,10 @@ export default function EditPostPage() {
 
   if (loading) {
     return (
-      <AdminLayout title="Edit Post">
+      <AdminLayout title="編輯文章">
         <div className="py-12 text-center">
           <div className="w-12 h-12 mx-auto border-b-2 rounded-full animate-spin border-primary"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-muted-foreground">載入中...</p>
         </div>
       </AdminLayout>
     );
@@ -129,14 +129,14 @@ export default function EditPostPage() {
 
   if (error && !post) {
     return (
-      <AdminLayout title="Edit Post">
+      <AdminLayout title="編輯文章">
         <div className="py-12 text-center">
           <p className="text-destructive">{error}</p>
           <Link
             href="/admin/posts"
             className="inline-block px-4 py-2 mt-4 text-white rounded bg-primary hover:opacity-80"
           >
-            Back to Posts
+            返回文章列表
           </Link>
         </div>
       </AdminLayout>
@@ -146,12 +146,12 @@ export default function EditPostPage() {
   return (
     <>
       <Head>
-        <title>Edit Post - Admin</title>
-        <meta name="description" content="Edit an existing post" />
+        <title>編輯文章 - 管理後台</title>
+        <meta name="description" content="編輯現有文章" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <AdminLayout title={`Edit: ${post?.title || 'Post'}`}>
+      <AdminLayout title={`編輯: ${post?.title || '文章'}`}>
         <div className="max-w-4xl mx-auto">
           <div className="border rounded-lg shadow-sm bg-card border-border">
             <div className="p-6">
@@ -164,7 +164,7 @@ export default function EditPostPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="title" className="block text-sm font-medium text-foreground">
-                    Post Title
+                    文章標題
                   </label>
                   <input
                     type="text"
@@ -174,13 +174,13 @@ export default function EditPostPage() {
                     value={formData.title}
                     onChange={handleInputChange}
                     className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
-                    placeholder="Enter post title"
+                    placeholder="請輸入文章標題"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="content" className="block mb-2 text-sm font-medium text-foreground">
-                    Post Content
+                    文章內容
                   </label>
                   <div className="overflow-hidden border rounded-md border-border">
                     <MDEditor
@@ -204,7 +204,7 @@ export default function EditPostPage() {
                     className="w-4 h-4 rounded text-primary focus:ring-primary border-border"
                   />
                   <label htmlFor="published" className="block ml-2 text-sm text-foreground">
-                    Published
+                    已發佈
                   </label>
                 </div>
 
@@ -213,14 +213,14 @@ export default function EditPostPage() {
                     href="/admin/posts"
                     className="px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-accent"
                   >
-                    Cancel
+                    取消
                   </Link>
                   <button
                     type="submit"
                     disabled={saving}
                     className="px-4 py-2 transition-opacity rounded-md bg-primary text-primary-foreground hover:opacity-80 disabled:opacity-50"
                   >
-                    {saving ? 'Updating...' : 'Update Post'}
+                    {saving ? '更新中...' : '更新文章'}
                   </button>
                 </div>
               </form>

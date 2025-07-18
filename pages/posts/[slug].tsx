@@ -69,7 +69,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
     );
   }
 
-  const pageUrl = `${siteSettings.siteUrl}/posts/${post.slug}`;
+  const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/posts/${post.slug}`;
   const ogImage = post.coverImage || `${siteSettings.siteUrl}/og-default.png`; // Assume a default OG image
 
   return (

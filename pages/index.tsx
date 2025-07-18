@@ -67,8 +67,8 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Head>
-        <title>Blog Platform - Share Your Stories</title>
-        <meta name="description" content="A modern blog platform built with Next.js and DynamoDB" />
+        <title>部落格平台 - 分享你的故事</title>
+        <meta name="description" content="一個用 Next.js 和 DynamoDB 打造的現代部落格平台" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -87,7 +87,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
           {/* Main Content */}
           <div className="lg:col-span-8">
             <section>
-              <h2 className="mb-4 text-2xl font-bold text-foreground">Latest Posts</h2>
+              <h2 className="mb-4 text-2xl font-bold text-foreground">最新文章</h2>
               {posts.length === 0 && !loading ? (
                 <div className="py-12 text-center lg:py-24">
                   <div className="max-w-md mx-auto">
@@ -96,8 +96,8 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
                     </div>
-                    <h2 className="mb-3 text-xl font-semibold text-foreground">No posts found</h2>
-                    <p className="text-muted-foreground">Try a different search term or clear your search.</p>
+                    <h2 className="mb-3 text-xl font-semibold text-foreground">找不到文章</h2>
+                    <p className="text-muted-foreground">請嘗試不同的搜尋關鍵字或清除您的搜尋。</p>
                   </div>
                 </div>
               ) : (
@@ -137,8 +137,8 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
                                   <CalendarIcon className="w-3.5 h-3.5" />
                                   <span>{formatDate(post.created_at)}</span>
                                 </div>
-                                <Link href={`/posts/${post.slug}`} className="inline-flex items-center text-sm font-medium text-primary hover:underline">
-                                  Read More
+                                <Link href={`/posts/${post.slug}`} className="inline-flex items-center text-sm font-medium text-primary hover:underline" aria-label={`閱讀更多關於 ${post.title}`}>
+                                  閱讀更多
                                   <ArrowRightIcon className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                                 </Link>
                               </div>
@@ -164,7 +164,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
             <div className="sticky space-y-6 top-24">
               {featuredPost && (
                 <section>
-                  <h2 className="mb-4 text-xl font-bold text-foreground">Featured Post</h2>
+                  <h2 className="mb-4 text-xl font-bold text-foreground">精選文章</h2>
                   <FeaturedPost post={featuredPost} />
                 </section>
               )}

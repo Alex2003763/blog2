@@ -15,12 +15,29 @@ function AppHead() {
   
   if (loading) return null;
   
+  const metaTitle = siteSettings.seo.metaTitle || siteSettings.siteName;
+  const metaDescription = siteSettings.siteDescription;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
   return (
     <Head>
-      <title>{siteSettings.seo.metaTitle || siteSettings.siteName}</title>
+      <title>{metaTitle}</title>
       <link rel="icon" href={siteSettings.favicon || '/favicon.ico'} />
-      <meta name="description" content={siteSettings.siteDescription} />
+      <meta name="description" content={metaDescription} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      {/* Open Graph Tags */}
+      <meta property="og:title" content={metaTitle} />
+      <meta property="og:description" content={metaDescription} />
+      <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+      <meta property="og:url" content={siteUrl} />
+      <meta property="og:type" content="website" />
+
+      {/* Twitter Card Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={metaTitle} />
+      <meta name="twitter:description" content={metaDescription} />
+      <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
     </Head>
   );
 }

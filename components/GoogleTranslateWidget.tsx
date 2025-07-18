@@ -48,7 +48,7 @@ export function GoogleTranslateWidget() {
         return cookie.substring('googtrans='.length, cookie.length);
       }
     }
-    return 'en';
+    return '/auto/zh-TW';
   };
 
   const [langCookie, setLangCookie] = React.useState(decodeURIComponent(getPrefLangCookie()));

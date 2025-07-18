@@ -22,7 +22,7 @@ interface HeaderProps {
 export default function Header({
   showBackButton = false,
   backHref = '/',
-  backText = 'Back to Home',
+  backText = '返回首頁',
   onBackClick,
   showAdminLink = false
 }: HeaderProps) {
@@ -43,9 +43,9 @@ export default function Header({
               )}
             </div>
             <div className="min-w-0">
-              <h1 className="text-lg font-semibold truncate text-foreground">
-                {loading ? 'Blog Platform' : siteSettings.siteName}
-              </h1>
+              <div className="text-lg font-semibold truncate text-foreground">
+                {loading ? '部落格平台' : siteSettings.siteName}
+              </div>
             </div>
           </Link>
         </div>
@@ -79,8 +79,8 @@ export default function Header({
               href="/admin"
               className="flex items-center px-3 py-2 space-x-2 text-sm font-medium transition-colors rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
             >
-              <span className="hidden sm:inline">Admin</span>
-              <span className="sm:hidden">Admin</span>
+              <span className="hidden sm:inline">管理</span>
+              <span className="sm:hidden">管理</span>
             </Link>
           )}
 
@@ -96,7 +96,7 @@ export default function Header({
           >
             <SunIcon className="w-5 h-5 transition-all scale-100 rotate-0 dark:-rotate-90 dark:scale-0" />
             <MoonIcon className="absolute w-5 h-5 transition-all scale-0 rotate-90 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only">切換主題</span>
           </button>
         </nav>
       </div>

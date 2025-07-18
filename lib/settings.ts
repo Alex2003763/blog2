@@ -73,8 +73,8 @@ export const defaultAppearanceSettings: AppearanceSettings = {
 };
 
 export const defaultSiteSettings: SiteSettings = {
-  siteName: 'My Blog',
-  siteDescription: 'A modern blog platform built with Next.js',
+  siteName: '我的部落格',
+  siteDescription: '一個用 Next.js 打造的現代部落格平台',
   siteUrl: 'https://myblog.com',
   adminEmail: 'admin@myblog.com',
   favicon: '/logo.svg',
@@ -85,9 +85,9 @@ export const defaultSiteSettings: SiteSettings = {
     github: ''
   },
   seo: {
-    metaTitle: 'My Blog - Latest Posts and Updates',
-    metaDescription: 'Stay updated with the latest posts and insights from our blog',
-    keywords: 'blog, technology, programming, web development'
+    metaTitle: '我的部落格 - 最新文章與動態',
+    metaDescription: '從我們的部落格獲取最新文章與見解',
+    keywords: '部落格, 科技, 程式設計, 網站開發'
   },
   content: {
     postsPerPage: 10,
@@ -97,7 +97,7 @@ export const defaultSiteSettings: SiteSettings = {
     showReadTime: true
   },
   footer: {
-    copyrightText: '© 2024 My Blog. All rights reserved.',
+    copyrightText: '© 2024 我的部落格. 保留所有權利.',
     showSocialLinks: true
   }
 };

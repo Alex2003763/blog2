@@ -134,13 +134,13 @@ export default function SettingsPage() {
       const data = await response.json();
 
       if (data.success) {
-        setSuccessMessage('Settings updated successfully!');
+        setSuccessMessage('設定已成功更新！');
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
-        setError(data.error || 'Failed to update settings');
+        setError(data.error || '更新設定失敗');
       }
     } catch (err) {
-      setError('Network error');
+      setError('網路錯誤');
     } finally {
       setSaving(false);
     }
@@ -169,10 +169,10 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <AdminLayout title="Settings">
+      <AdminLayout title="設定">
         <div className="py-12 text-center">
           <div className="w-12 h-12 mx-auto border-b-2 rounded-full animate-spin border-primary"></div>
-          <p className="mt-4 text-muted-foreground">Loading settings...</p>
+          <p className="mt-4 text-muted-foreground">正在載入設定...</p>
         </div>
       </AdminLayout>
     );
@@ -181,12 +181,12 @@ export default function SettingsPage() {
   return (
     <>
       <Head>
-        <title>Settings - Admin</title>
-        <meta name="description" content="Configure site settings" />
+        <title>設定 - 管理後台</title>
+        <meta name="description" content="配置網站設定" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <AdminLayout title="Site Settings">
+      <AdminLayout title="網站設定">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* General Settings */}
@@ -194,14 +194,14 @@ export default function SettingsPage() {
               <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
                   <CogIcon className="w-5 h-5 mr-2 text-muted-foreground" />
-                  <h3 className="text-lg font-medium text-foreground">General Settings</h3>
+                  <h3 className="text-lg font-medium text-foreground">一般設定</h3>
                 </div>
               </div>
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <label htmlFor="siteName" className="block text-sm font-medium text-foreground">
-                      Site Name
+                      網站名稱
                     </label>
                     <input
                       type="text"
@@ -214,7 +214,7 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <label htmlFor="siteUrl" className="block text-sm font-medium text-foreground">
-                      Site URL
+                      網站網址
                     </label>
                     <input
                       type="url"
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label htmlFor="siteDescription" className="block text-sm font-medium text-foreground">
-                    Site Description
+                    網站描述
                   </label>
                   <textarea
                     id="siteDescription"
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label htmlFor="adminEmail" className="block text-sm font-medium text-foreground">
-                    Admin Email
+                    管理員電子郵件
                   </label>
                   <input
                     type="email"
@@ -254,7 +254,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label htmlFor="favicon" className="block text-sm font-medium text-foreground">
-                    Website Icon (Favicon)
+                    網站圖示 (Favicon)
                   </label>
                   <input
                     type="text"
@@ -266,7 +266,7 @@ export default function SettingsPage() {
                     className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
                   />
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Enter the path to your favicon, e.g.: /favicon.ico or https://example.com/icon.png
+                    請輸入您的網站圖示路徑，例如：/favicon.ico 或 https://example.com/icon.png
                   </p>
                 </div>
               </div>
@@ -277,13 +277,13 @@ export default function SettingsPage() {
               <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
                   <GlobeAltIcon className="w-5 h-5 mr-2 text-muted-foreground" />
-                  <h3 className="text-lg font-medium text-foreground">SEO Settings</h3>
+                  <h3 className="text-lg font-medium text-foreground">SEO 設定</h3>
                 </div>
               </div>
               <div className="p-6 space-y-6">
                 <div>
                   <label htmlFor="seo.metaTitle" className="block text-sm font-medium text-foreground">
-                    Meta Title
+                    Meta 標題
                   </label>
                   <input
                     type="text"
@@ -296,7 +296,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label htmlFor="seo.metaDescription" className="block text-sm font-medium text-foreground">
-                    Meta Description
+                    Meta 描述
                   </label>
                   <textarea
                     id="seo.metaDescription"
@@ -309,7 +309,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label htmlFor="seo.keywords" className="block text-sm font-medium text-foreground">
-                    Keywords (comma separated)
+                    關鍵字 (以逗號分隔)
                   </label>
                   <input
                     type="text"
@@ -328,7 +328,7 @@ export default function SettingsPage() {
               <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center">
                   <LinkIcon className="w-5 h-5 mr-2 text-muted-foreground" />
-                  <h3 className="text-lg font-medium text-foreground">Social Links</h3>
+                  <h3 className="text-lg font-medium text-foreground">社群連結</h3>
                 </div>
               </div>
               <div className="p-6 space-y-6">
@@ -410,7 +410,7 @@ export default function SettingsPage() {
                 disabled={saving}
                 className="px-6 py-2 transition-opacity rounded-md text-primary-foreground bg-primary hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {saving ? 'Saving...' : 'Save Settings'}
+                {saving ? '儲存中...' : '儲存設定'}
               </button>
             </div>
           </form>

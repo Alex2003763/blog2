@@ -40,10 +40,10 @@ export default function LoginPage() {
         localStorage.setItem('auth_token', data.data.token);
         router.push('/admin');
       } else {
-        setError(data.error || 'Login failed');
+        setError(data.error || '登入失敗');
       }
     } catch (err) {
-      setError('Network error');
+      setError('網路錯誤');
     } finally {
       setLoading(false);
     }
@@ -59,18 +59,18 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col justify-center min-h-screen py-12 bg-background sm:px-6 lg:px-8">
       <Head>
-        <title>Admin Login - Blog Platform</title>
-        <meta name="description" content="Admin login page" />
+        <title>管理員登入 - 部落格平台</title>
+        <meta name="description" content="管理員登入頁面" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-foreground">
-            <Link href="/">Blog Platform</Link>
+            <Link href="/">部落格平台</Link>
           </h1>
           <h2 className="mt-6 text-2xl font-semibold text-foreground">
-            Admin Login
+            管理員登入
           </h2>
         </div>
       </div>
@@ -86,7 +86,7 @@ export default function LoginPage() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-foreground">
-                Username
+                使用者名稱
               </label>
               <div className="mt-1">
                 <input
@@ -97,14 +97,14 @@ export default function LoginPage() {
                   value={formData.username}
                   onChange={handleChange}
                   className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-border bg-background text-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                  placeholder="Enter your username"
+                  placeholder="請輸入您的使用者名稱"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                Password
+                密碼
               </label>
               <div className="mt-1">
                 <input
@@ -115,7 +115,7 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleChange}
                   className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-border bg-background text-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                  placeholder="Enter your password"
+                  placeholder="請輸入您的密碼"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="flex justify-center w-full px-4 py-2 text-sm font-medium border border-transparent rounded-md shadow-sm text-primary-foreground bg-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
               >
-                {loading ? 'Logging in...' : 'Login'}
+                {loading ? '登入中...' : '登入'}
               </button>
             </div>
           </form>
@@ -136,7 +136,7 @@ export default function LoginPage() {
               href="/"
               className="text-sm text-primary hover:opacity-80"
             >
-              Back to Home
+              返回首頁
             </Link>
           </div>
         </div>

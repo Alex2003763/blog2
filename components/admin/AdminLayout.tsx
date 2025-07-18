@@ -21,7 +21,7 @@ interface AdminLayoutProps {
   title?: string;
 }
 
-export default function AdminLayout({ children, title = 'Admin Dashboard' }: AdminLayoutProps) {
+export default function AdminLayout({ children, title = '管理後台' }: AdminLayoutProps) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -49,10 +49,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }: Adm
   };
 
   const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-    { name: 'Posts', href: '/admin/posts', icon: DocumentTextIcon },
-    { name: 'Appearance', href: '/admin/appearance', icon: PaintBrushIcon },
-    { name: 'Settings', href: '/admin/settings', icon: CogIcon },
+    { name: '儀表板', href: '/admin', icon: HomeIcon },
+    { name: '文章', href: '/admin/posts', icon: DocumentTextIcon },
+    { name: '外觀', href: '/admin/appearance', icon: PaintBrushIcon },
+    { name: '設定', href: '/admin/settings', icon: CogIcon },
   ];
 
   const isActive = (href: string) => {
@@ -79,7 +79,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }: Adm
           </div>
           <div className="flex-1 h-0 pt-8 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-6">
-              <h1 className="text-2xl font-bold text-foreground">Admin</h1>
+              <h1 className="text-2xl font-bold text-foreground">管理</h1>
             </div>
             <nav className="px-4 mt-8 space-y-2">
               {navigation.map((item) => (
@@ -106,7 +106,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }: Adm
         <div className="flex flex-col flex-1 min-h-0 border-r bg-background border-border">
           <div className="flex flex-col flex-1 pt-8 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-6">
-              <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
+              <h1 className="text-2xl font-bold text-foreground">管理面板</h1>
             </div>
             <nav className="flex-1 px-4 mt-8 space-y-2">
               {navigation.map((item) => (
@@ -152,7 +152,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }: Adm
                   href="/"
                   className="text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
                 >
-                  View Site
+                  查看網站
                 </Link>
                 <button
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -166,12 +166,12 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }: Adm
                 </button>
                 <div className="flex items-center space-x-3">
                   <div className="text-right">
-                    <div className="text-sm font-medium text-foreground">Welcome, {user?.username}</div>
+                    <div className="text-sm font-medium text-foreground">歡迎, {user?.username}</div>
                   </div>
                   <button
                     onClick={handleLogout}
                     className="p-2 transition-colors rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                    title="Logout"
+                    title="登出"
                   >
                     <ArrowRightOnRectangleIcon className="w-6 h-6" />
                   </button>

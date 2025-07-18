@@ -37,7 +37,7 @@ export default function RecentPosts() {
     return (
       <div className="border rounded-lg shadow-sm bg-card border-border">
         <div className="px-6 py-4 border-b border-border">
-          <h3 className="text-lg font-medium text-foreground">Recent Posts</h3>
+          <h3 className="text-lg font-medium text-foreground">最近文章</h3>
         </div>
         <div className="p-6">
           <div className="space-y-4 animate-pulse">
@@ -58,24 +58,24 @@ export default function RecentPosts() {
     <div className="border rounded-lg shadow-sm bg-card border-border">
       <div className="px-6 py-4 border-b border-border">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-foreground">Recent Posts</h3>
+          <h3 className="text-lg font-medium text-foreground">最近文章</h3>
           <Link
             href="/admin/posts"
             className="text-sm transition-opacity text-primary hover:opacity-80"
           >
-            View all
+            檢視全部
           </Link>
         </div>
       </div>
       <div className="divide-y divide-border">
         {posts.length === 0 ? (
           <div className="px-6 py-8 text-center">
-            <p className="text-muted-foreground">No posts yet</p>
+            <p className="text-muted-foreground">尚無文章</p>
             <Link
               href="/admin/posts/new"
               className="inline-block mt-2 transition-opacity text-primary hover:opacity-80"
             >
-              Create your first post
+              建立您的第一篇文章
             </Link>
           </div>
         ) : (
@@ -95,7 +95,7 @@ export default function RecentPosts() {
                         ? 'bg-green-500/10 text-green-500'
                         : 'bg-muted text-muted-foreground'
                     }`}>
-                      {post.published ? 'Published' : 'Draft'}
+                      {post.published ? '已發佈' : '草稿'}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -107,14 +107,14 @@ export default function RecentPosts() {
                     href={`/admin/posts/${post.id}`}
                     className="text-sm transition-opacity text-primary hover:opacity-80"
                   >
-                    Edit
+                    編輯
                   </Link>
                   {post.published && (
                     <Link
                       href={`/posts/${post.slug}`}
                       className="text-sm transition-colors text-muted-foreground hover:text-foreground"
                     >
-                      View
+                      檢視
                     </Link>
                   )}
                 </div>

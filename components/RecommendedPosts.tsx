@@ -24,7 +24,7 @@ export default function RecommendedPosts({ posts, orientation = 'vertical' }: Re
 
   return (
     <div className={orientation === 'horizontal' ? 'mt-12' : ''}>
-      <h3 className="mb-4 text-xl font-bold text-foreground">Recommended Posts</h3>
+      <h3 className="mb-4 text-xl font-bold text-foreground">推薦文章</h3>
       <div className={containerClasses}>
         {posts.map((post) => (
           <Link href={`/posts/${post.slug}`} key={post.id} className="block group">
