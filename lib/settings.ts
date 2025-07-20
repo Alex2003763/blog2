@@ -85,8 +85,8 @@ export const defaultSiteSettings: SiteSettings = {
     github: ''
   },
   seo: {
-    metaTitle: '我的部落格 - 最新文章與動態',
-    metaDescription: '從我們的部落格獲取最新文章與見解',
+    metaTitle: '我的部落格 - 探索最新科技趨勢、深度程式設計教學與網站開發實戰經驗分享',
+    metaDescription: '歡迎來到我的部落格！這裡提供最新、最深入的科技動態分析、實用的程式設計教學文章，以及豐富的網站開發實戰經驗。無論您是開發者、設計師或科技愛好者，都能在這裡找到有價值的內容。',
     keywords: '部落格, 科技, 程式設計, 網站開發'
   },
   content: {

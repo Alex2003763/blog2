@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useRouter } from 'next/router';
 import { AppearanceSettings, SiteSettings, defaultAppearanceSettings, defaultSiteSettings } from '../lib/settings';
 
 interface SettingsContextType {
@@ -24,6 +25,7 @@ interface SettingsProviderProps {
 }
 
 export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) => {
+  const router = useRouter();
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
   const [appearanceSettings, setAppearanceSettings] = useState<AppearanceSettings>(defaultAppearanceSettings);
   const [loading, setLoading] = useState(true);
@@ -124,8 +126,18 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
         document.head.appendChild(metaKeywords);
       }
       metaKeywords.setAttribute('content', siteSettings.seo.keywords);
+
+      // 更新 Canonical Tag
+      const canonicalUrl = `${siteSettings.siteUrl.replace(/\/$/, '')}${router.asPath}`;
+      let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.rel = 'canonical';
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.href = canonicalUrl;
     }
-  }, [siteSettings, loading]);
+  }, [siteSettings, loading, router.asPath]);
 
   const value: SettingsContextType = {
     siteSettings,

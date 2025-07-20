@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { GetStaticProps } from 'next';
 import { BlogPost, dynamoDBService } from '../lib/dynamodb';
+import { SiteSettings, SettingsService } from '../lib/settings';
 import { formatDate, isContentJustAnImage } from '../lib/utils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -18,9 +19,10 @@ interface HomeProps {
   recommendedPosts: BlogPost[];
   initialPosts: BlogPost[];
   initialTotalPages: number;
+  siteSettings: SiteSettings;
 }
 
-export default function Home({ featuredPost, recommendedPosts, initialPosts, initialTotalPages }: HomeProps) {
+export default function Home({ featuredPost, recommendedPosts, initialPosts, initialTotalPages, siteSettings }: HomeProps) {
   const router = useRouter();
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,6 +80,10 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
       <main className="container flex-grow px-4 py-2 mx-auto sm:px-6 lg:px-8 lg:py-4">
         {/* Hero Section */}
         <section className="py-4 text-center md:py-6">
+          <h1 className="mb-4 text-4xl font-bold tracking-tight text-center md:text-5xl text-foreground">
+            {siteSettings.siteName}
+          </h1>
+          <p className="mb-6 text-lg text-center text-muted-foreground">{siteSettings.siteDescription}</p>
           <div className="w-full max-w-md mx-auto">
             <SearchInput />
           </div>
@@ -181,6 +187,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
 
 export const getStaticProps: GetStaticProps = async () => {
   const postsPerPage = 6;
+  const siteSettings = await SettingsService.getSiteSettings();
   const allPosts = await dynamoDBService.getPublishedPosts();
   allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
@@ -197,6 +204,7 @@ export const getStaticProps: GetStaticProps = async () => {
       recommendedPosts,
       initialPosts,
       initialTotalPages: totalPages,
+      siteSettings,
     },
     revalidate: 60, // Re-generate the page every 60 seconds
   };

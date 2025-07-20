@@ -72,7 +72,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
 
   const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/posts/${post.slug}/`;
   const ogImage = post.coverImage || `${siteSettings.siteUrl}/og-default.png`; // Assume a default OG image
-  const twitterHandle = siteSettings.twitterHandle ? `@${siteSettings.twitterHandle.replace('@', '')}` : '';
+  const twitterHandle = siteSettings.socialLinks.twitter ? `@${siteSettings.socialLinks.twitter.replace('@', '')}` : '';
 
   return (
     <div className="min-h-screen bg-background">
