@@ -58,7 +58,7 @@ export function GoogleTranslateWidget() {
   }, []);
 
   const onChange = (value: string) => {
-    const lang = "/en/" + value;
+    const lang = "/auto/" + value;
     setLangCookie(lang);
     const element = document.querySelector(".goog-te-combo") as HTMLSelectElement;
     if (element) {

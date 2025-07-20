@@ -69,7 +69,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
     );
   }
 
-  const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/posts/${post.slug}`;
+  const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/posts/${post.slug}/`;
   const ogImage = post.coverImage || `${siteSettings.siteUrl}/og-default.png`; // Assume a default OG image
 
   return (
@@ -77,6 +77,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
       <Head>
         <title>{`${post.title} | ${siteSettings.siteName}`}</title>
         <meta name="description" content={post.excerpt || post.title} />
+        <link rel="canonical" href={pageUrl} />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
