@@ -54,6 +54,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
     checkAdminStatus();
   }, []);
 
+
   if (router.isFallback) {
     return (
       <div className="min-h-screen bg-background">
@@ -71,6 +72,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
 
   const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/posts/${post.slug}/`;
   const ogImage = post.coverImage || `${siteSettings.siteUrl}/og-default.png`; // Assume a default OG image
+  const twitterHandle = siteSettings.twitterHandle ? `@${siteSettings.twitterHandle.replace('@', '')}` : '';
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,6 +80,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
         <title>{`${post.title} | ${siteSettings.siteName}`}</title>
         <meta name="description" content={post.excerpt || post.title} />
         <link rel="canonical" href={pageUrl} />
+        <link rel="alternate" type="application/json+oembed" href={`${pageUrl}oembed`} title={`${post.title} oEmbed`} />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
@@ -86,6 +89,10 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
         <meta property="og:description" content={post.excerpt || ''} />
         <meta property="og:image" content={ogImage} />
         <meta property="og:site_name" content={siteSettings.siteName} />
+        <meta property="article:published_time" content={new Date(post.created_at).toISOString()} />
+        {post.updated_at !== post.created_at && (
+          <meta property="article:modified_time" content={new Date(post.updated_at).toISOString()} />
+        )}
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -93,6 +100,36 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.excerpt || ''} />
         <meta name="twitter:image" content={ogImage} />
+        {twitterHandle && <meta name="twitter:creator" content={twitterHandle} />}
+        
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.title,
+            "description": post.excerpt || post.title,
+            "image": ogImage,
+            "author": {
+              "@type": "Person",
+              "name": post.author
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": siteSettings.siteName,
+              "logo": {
+                "@type": "ImageObject",
+                "url": `${siteSettings.siteUrl}/logo.png`
+              }
+            },
+            "datePublished": new Date(post.created_at).toISOString(),
+            "dateModified": new Date(post.updated_at).toISOString(),
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": pageUrl
+            }
+          })}
+        </script>
       </Head>
 
       <Header showBackButton={true} />

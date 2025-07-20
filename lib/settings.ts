@@ -78,6 +78,7 @@ export const defaultSiteSettings: SiteSettings = {
   siteUrl: 'https://myblog.com',
   adminEmail: 'admin@myblog.com',
   favicon: '/logo.svg',
+  twitterHandle: '',
   socialLinks: {
     twitter: '',
     facebook: '',

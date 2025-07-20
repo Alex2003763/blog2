@@ -19,10 +19,13 @@ const languages = [
 
 const includedLanguages = languages.map(lang => lang.value).join(",");
 
-function googleTranslateElementInit() {
-  new window.google.translate.TranslateElement({
-    pageLanguage: "auto", includedLanguages
-  }, "google_translate_element");
+export function googleTranslateElementInit() {
+  if (window.google && window.google.translate) {
+    new window.google.translate.TranslateElement({
+      pageLanguage: "zh-TW",
+      includedLanguages,
+    }, "google_translate_element");
+  }
 }
 
 const GoogleTranslateContainer = memo(() => {
@@ -39,6 +42,7 @@ const GoogleTranslateContainer = memo(() => {
 GoogleTranslateContainer.displayName = 'GoogleTranslateContainer';
 
 export function GoogleTranslateWidget() {
+  const [isTranslating, setIsTranslating] = React.useState(false);
 
   const getPrefLangCookie = () => {
     const cookies = document.cookie.split(';');
@@ -48,7 +52,7 @@ export function GoogleTranslateWidget() {
         return cookie.substring('googtrans='.length, cookie.length);
       }
     }
-    return '/auto/zh-TW';
+    return '/zh-TW/en';
   };
 
   const [langCookie, setLangCookie] = React.useState(decodeURIComponent(getPrefLangCookie()));
@@ -58,17 +62,22 @@ export function GoogleTranslateWidget() {
   }, []);
 
   const onChange = (value: string) => {
-    const lang = "/auto/" + value;
-    setLangCookie(lang);
-    const element = document.querySelector(".goog-te-combo") as HTMLSelectElement;
-    if (element) {
-      element.value = value;
-      element.dispatchEvent(new Event("change"));
-    }
+    setIsTranslating(true);
+    const lang = "/zh-TW/" + value;
+    // Set cookie and reload
+    const date = new Date();
+    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+    document.cookie = `googtrans=${lang}; expires=${date.toUTCString()}; path=/`;
+    window.location.reload();
   };
 
   return (
-    <div>
+    <div className="relative">
+      {isTranslating && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="w-8 h-8 border-b-2 rounded-full border-primary animate-spin"></div>
+        </div>
+      )}
       <GoogleTranslateContainer />
       <LanguageSelector onChange={onChange} value={langCookie} />
     </div>
@@ -76,7 +85,7 @@ export function GoogleTranslateWidget() {
 };
 
 function LanguageSelector({ onChange, value }: { onChange: (value: string) => void, value: string }) {
-  const langCookie = value.split("/")[2] || "en";
+  const langCookie = value.split("/")[2] || "zh-TW";
   const [isOpen, setIsOpen] = React.useState(false);
   const selectedLanguage = languages.find(lang => lang.value === langCookie);
 

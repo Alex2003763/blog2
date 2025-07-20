@@ -43,9 +43,9 @@ export default function Header({
               )}
             </div>
             <div className="min-w-0">
-              <div className="text-lg font-semibold truncate text-foreground">
+              <h1 className="text-lg font-semibold truncate text-foreground">
                 {loading ? '部落格平台' : siteSettings.siteName}
-              </div>
+              </h1>
             </div>
           </Link>
         </div>

@@ -7,6 +7,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeMermaid from 'rehype-mermaid';
 import mermaid from 'mermaid';
 import 'highlight.js/styles/github-dark-dimmed.css';
+import { visit } from 'unist-util-visit';
 
 interface MarkdownRendererProps {
   content: string;
@@ -16,11 +17,28 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [processedContent, setProcessedContent] = React.useState<string>('');
 
+  // Custom rehype plugin to add alt text to images
+  const rehypeAddImageAlt = () => (tree: any) => {
+    visit(tree, 'element', (node) => {
+      if (node.tagName === 'img') {
+        const alt = node.properties?.alt;
+        if (!alt || alt.trim() === '') {
+          // Generate alt text from filename if missing
+          const src = node.properties?.src || '';
+          const filename = src.split('/').pop() || '';
+          const altText = filename.split('.')[0].replace(/[-_]/g, ' ');
+          node.properties.alt = altText;
+        }
+      }
+    });
+  };
+
   // Process markdown using remark
   const processMarkdown = async (markdown: string): Promise<string> => {
     const result = await remark()
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
+      .use(rehypeAddImageAlt) // Add alt text to images
       .use(rehypeHighlight)
       .use(rehypeMermaid) // Use default options to avoid type errors
       .use(rehypeStringify)
@@ -76,7 +94,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     <div
       id="article-content"
       ref={contentRef}
-      className="px-4 py-6 overflow-auto prose prose-base max-w-none dark:prose-invert prose-pre:bg-[#1c1d21] prose-code:before:content-none prose-code:after:content-none markdown-content md:px-6 lg:px-8"
+      className="px-4 py-6 prose prose-base max-w-none dark:prose-invert prose-pre:bg-[#1c1d21] prose-code:before:content-none prose-code:after:content-none markdown-content md:px-6 lg:px-8"
       dangerouslySetInnerHTML={{ __html: processedContent }}
     />
   );
