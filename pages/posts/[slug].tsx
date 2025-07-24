@@ -13,7 +13,7 @@ import TableOfContents from '../../components/TableOfContents';
 import RecommendedPosts from '../../components/RecommendedPosts';
 import ProgressBar from '../../components/ProgressBar';
 import GiscusComments from '../../components/GiscusComments';
-import { CalendarIcon, UserIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon } from '../../components/icons';
+import { CalendarIcon, UserIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon, EyeIcon } from '../../components/icons';
 
 // Dynamically import MarkdownRenderer to ensure it's only loaded on the client-side.
 // This prevents server-side rendering errors from the mermaid library.
@@ -54,6 +54,12 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
     checkAdminStatus();
   }, []);
 
+  useEffect(() => {
+    if (post?.id) {
+      fetch(`/api/posts/${post.id}`, { method: 'POST' });
+    }
+  }, [post?.id]);
+
 
   if (router.isFallback) {
     return (
@@ -88,6 +94,8 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt || ''} />
         <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content={siteSettings.siteName} />
         <meta property="article:published_time" content={new Date(post.created_at).toISOString()} />
         {post.updated_at !== post.created_at && (
@@ -161,6 +169,12 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
                         <span>Updated: {formatDateTime(post.updated_at)}</span>
                       </div>
                     )}
+                    {post.views !== undefined && (
+                      <div className="flex items-center space-x-2">
+                        <EyeIcon className="w-4 h-4" />
+                        <span>{post.views} views</span>
+                      </div>
+                    )}
                   </div>
                   {isAdmin && (
                     <div className="flex p-3 my-2 space-x-4 border rounded-md bg-secondary">
@@ -212,36 +226,44 @@ const PostPage: NextPage<PostPageProps> = ({ post, siteSettings, recommendedPost
               </article>
             </div>
 
-            {/* Sidebar */}
-            <aside className="hidden lg:block lg:col-span-3">
-              <div className="sticky top-24">
-                <div className="mb-8">
-                  <h3 className="mb-4 text-sm font-semibold uppercase text-muted-foreground">On this page</h3>
-                  <div className="table-of-contents-small">
-                    <TableOfContents content={post.content} />
+            {/* Sidebar - Responsive design */}
+            <aside className="lg:col-span-3">
+              {/* Mobile Table of Contents */}
+              <div className="mb-8 lg:hidden">
+                <TableOfContents content={post.content} />
+              </div>
+              
+              {/* Desktop Table of Contents and Navigation */}
+              <div className="hidden lg:block">
+                <div className="sticky top-24">
+                  <div className="mb-8">
+                    <h3 className="mb-4 text-sm font-semibold uppercase text-muted-foreground">On this page</h3>
+                    <div className="table-of-contents-small">
+                      <TableOfContents content={post.content} />
+                    </div>
                   </div>
-                </div>
-                <div className="mt-8">
-                  <h3 className="mb-4 text-sm font-semibold uppercase text-muted-foreground">Navigation</h3>
-                  <div className="flex flex-col gap-4">
-                    {prevPost && (
-                      <Link
-                        href={`/posts/${prevPost.slug}`}
-                        className="flex items-center text-sm font-medium text-primary hover:underline"
-                      >
-                        <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                        {prevPost.title}
-                      </Link>
-                    )}
-                    {nextPost && (
-                      <Link
-                        href={`/posts/${nextPost.slug}`}
-                        className="flex items-center text-sm font-medium text-primary hover:underline"
-                      >
-                        <ArrowRightIcon className="w-4 h-4 mr-2" />
-                        {nextPost.title}
-                      </Link>
-                    )}
+                  <div className="mt-8">
+                    <h3 className="mb-4 text-sm font-semibold uppercase text-muted-foreground">Navigation</h3>
+                    <div className="flex flex-col gap-4">
+                      {prevPost && (
+                        <Link
+                          href={`/posts/${prevPost.slug}`}
+                          className="flex items-center p-3 text-sm font-medium transition-colors rounded-lg text-primary bg-secondary hover:bg-secondary/80"
+                        >
+                          <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                          <span className="line-clamp-1">{prevPost.title}</span>
+                        </Link>
+                      )}
+                      {nextPost && (
+                        <Link
+                          href={`/posts/${nextPost.slug}`}
+                          className="flex items-center p-3 text-sm font-medium transition-colors rounded-lg text-primary bg-secondary hover:bg-secondary/80"
+                        >
+                          <ArrowRightIcon className="w-4 h-4 mr-2" />
+                          <span className="line-clamp-1">{nextPost.title}</span>
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -282,14 +304,16 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const siteSettings = await SettingsService.getSiteSettings();
   const allPosts = await dynamoDBService.getAllPosts({ status: 'published' });
 
-  // Recommended Posts
+  // Find the current post's index
+  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+
+  // Get recommended posts (excluding the current one)
   const recommendedPosts = allPosts
-    .filter((p) => p.slug !== slug)
-    .sort(() => 0.5 - Math.random())
+    .filter((p, index) => index !== currentIndex)
+    .sort(() => 0.5 - Math.random()) // Shuffle for variety
     .slice(0, 3);
 
-  // Navigation
-  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+  // Get previous and next posts for navigation
   const prevPostData = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
   const nextPostData = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 

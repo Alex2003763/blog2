@@ -69,10 +69,23 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Head>
-        <title>部落格平台 - 分享你的故事</title>
-        <meta name="description" content="一個用 Next.js 和 DynamoDB 打造的現代部落格平台" />
+        <title>{siteSettings.siteName}</title>
+        <meta name="description" content={siteSettings.siteDescription} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href={siteSettings.favicon || "/favicon.ico"} />
+        
+        {/* Open Graph Tags */}
+        <meta property="og:title" content={siteSettings.siteName} />
+        <meta property="og:description" content={siteSettings.siteDescription} />
+        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`} />
+        <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL} />
+        <meta property="og:type" content="website" />
+        
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={siteSettings.siteName} />
+        <meta name="twitter:description" content={siteSettings.siteDescription} />
+        <meta name="twitter:image" content={`${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`} />
       </Head>
 
       <Header showAdminLink={true} />
@@ -114,7 +127,7 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
                         {posts.map((post) => (
                           <article
                             key={post.id}
-                            className="flex flex-col h-full overflow-hidden transition-all duration-300 transform border rounded-lg group bg-card hover:shadow-lg hover:-translate-y-1"
+                            className="flex flex-col h-full overflow-hidden transition-all duration-300 transform border rounded-lg group bg-card hover:shadow-xl hover:-translate-y-1"
                           >
                             <div className="flex flex-col flex-grow p-5">
                               <h2 className="mb-2 text-lg font-semibold transition-colors text-foreground group-hover:text-primary">
@@ -129,9 +142,11 @@ export default function Home({ featuredPost, recommendedPosts, initialPosts, ini
                                 </div>
                               ) : (
                                 post.excerpt && (
-                                  <p className="flex-grow mb-4 text-sm text-muted-foreground line-clamp-3">
-                                    {post.excerpt}
-                                  </p>
+                                  <div className="flex-grow p-2 mb-4 rounded-md bg-secondary/50">
+                                    <p className="text-sm text-muted-foreground line-clamp-3">
+                                      {post.excerpt}
+                                    </p>
+                                  </div>
                                 )
                               )}
                               

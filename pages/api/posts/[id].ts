@@ -23,6 +23,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return await handleUpdatePost(req, res, id);
       case 'DELETE':
         return await handleDeletePost(req, res, id);
+      case 'POST':
+        return await handleIncrementView(req, res, id);
       default:
         return res.status(405).json(createApiResponse(false, null, 'Method not allowed'));
     }
@@ -120,5 +122,21 @@ async function handleDeletePost(req: NextApiRequest, res: NextApiResponse, id: s
   } catch (error) {
     console.error('Delete post error:', error);
     return res.status(500).json(createApiResponse(false, null, 'Failed to delete post'));
+  }
+}
+
+async function handleIncrementView(req: NextApiRequest, res: NextApiResponse, id: string) {
+  try {
+    const post = await dynamoDBService.getPostById(id);
+    if (!post) {
+      return res.status(404).json(createApiResponse(false, null, 'Post not found'));
+    }
+
+    await dynamoDBService.incrementPostViews(id, post.created_at);
+    return res.status(200).json(createApiResponse(true, { message: 'View count incremented' }));
+  } catch (error) {
+    console.error('Increment view count error:', error);
+    // Non-critical error, so we can return a success response to the client
+    return res.status(200).json(createApiResponse(true, { message: 'View count increment failed silently' }));
   }
 }

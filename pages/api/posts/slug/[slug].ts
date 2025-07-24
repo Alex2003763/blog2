@@ -26,6 +26,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const authPayload = await AuthService.requireAuth(req, res);
       if (!authPayload) return; // Auth failed, requireAuth handled the response
     } else {
+      // Increment view count for published posts
+      await dynamoDBService.incrementPostViews(post.id, post.created_at);
       // Cache published posts
       res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     }

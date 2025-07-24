@@ -32,19 +32,28 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       }
     });
   };
+// Custom rehype plugin to downgrade H1 to H2
+const rehypeDowngradeHeadings = () => (tree: any) => {
+  visit(tree, 'element', (node) => {
+    if (node.tagName === 'h1') {
+      node.tagName = 'h2';
+    }
+  });
+};
 
-  // Process markdown using remark
-  const processMarkdown = async (markdown: string): Promise<string> => {
-    const result = await remark()
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
-      .use(rehypeAddImageAlt) // Add alt text to images
-      .use(rehypeHighlight)
-      .use(rehypeMermaid) // Use default options to avoid type errors
-      .use(rehypeStringify)
-      .process(markdown);
-    return result.toString();
-  };
+// Process markdown using remark
+const processMarkdown = async (markdown: string): Promise<string> => {
+  const result = await remark()
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+    .use(rehypeDowngradeHeadings) // Downgrade H1s to H2s
+    .use(rehypeAddImageAlt) // Add alt text to images
+    .use(rehypeHighlight)
+    .use(rehypeMermaid) // Use default options to avoid type errors
+    .use(rehypeStringify)
+    .process(markdown);
+  return result.toString();
+};
 
   useEffect(() => {
     processMarkdown(content).then(setProcessedContent);

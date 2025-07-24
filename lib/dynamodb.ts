@@ -40,6 +40,7 @@ export interface BlogPost {
   created_at: string;
   updated_at: string;
   published: boolean;
+  views?: number;
 }
 
 export class DynamoDBService {
@@ -209,6 +210,7 @@ export class DynamoDBService {
         ...post,
         created_at: now,
         updated_at: now,
+        views: 0,
       };
 
       const params = {
@@ -304,6 +306,24 @@ export class DynamoDBService {
     } catch (error) {
       console.error('Error deleting post:', error);
       throw error;
+    }
+  }
+
+  async incrementPostViews(id: string, created_at: string): Promise<void> {
+    try {
+      const params = {
+        TableName: this.tableName,
+        Key: { id, created_at },
+        UpdateExpression: 'SET views = if_not_exists(views, :start) + :incr',
+        ExpressionAttributeValues: {
+          ':start': 0,
+          ':incr': 1,
+        },
+      };
+      await dynamodb.send(new UpdateCommand(params));
+    } catch (error) {
+      console.error('Error incrementing post views:', error);
+      // 不拋出錯誤，因為這不是關鍵操作
     }
   }
 }

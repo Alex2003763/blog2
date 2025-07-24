@@ -259,6 +259,7 @@ export default function PostsPage() {
                       <tr>
                         <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">標題</th>
                         <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">狀態</th>
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">瀏覽</th>
                         <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">作者</th>
                         <th className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-muted-foreground">日期</th>
                         <th className="px-6 py-3 text-xs font-medium tracking-wider text-right uppercase text-muted-foreground">操作</th>
@@ -275,6 +276,7 @@ export default function PostsPage() {
                               {post.published ? '已發佈' : '草稿'}
                             </span>
                           </td>
+                          <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">{post.views ?? 0}</td>
                           <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">{post.author}</td>
                           <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">{formatDateTime(post.updated_at)}</td>
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
